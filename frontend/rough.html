@@ -1,0 +1,62 @@
+<!-- index.html — landing page, login/register buttons
+login.html — email + password form
+register.html — name + email + password + confirm password form
+forgot.html — email input, reset link request
+dashboard.html — welcome message, stats cards, recent files table
+files.html — my files list/grid, upload button, download/delete/share actions
+bonds.html — groups/bonds list, create group button
+group.html — single group detail, members list, group files, upload to group, invite button
+shared.html — files shared with me table, file owner, which group, download
+profile.html — user info, storage quota bar, change password, delete account
+share.html — public share link page (anyone can access without login) -->
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #0099cc;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 2px solid #0099cc;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.input-wrapper span {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+}
+</style>
+
+<div class="form-group">
+    <label>Email Id</label>
+    <div class="input-wrapper">
+        <span>✉️</span>
+        <input type="email" placeholder="thisuix@mail.com">
+    </div>
+</div>
+
+<div class="form-group">
+    <label>Password</label>
+    <div class="input-wrapper">
+        <span>🔒</span>
+        <input type="password" placeholder="••••••••••••••">
+    </div>
+</div>
