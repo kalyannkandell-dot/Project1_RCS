@@ -120,3 +120,64 @@ form {
     background-color: #1d0384;
     flex: 1;
 }
+
+.hero {
+    background-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgb(60, 98, 132) 65%), url('images/landing-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    width: 100%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 25px;
+}
+
+#h1_index {
+    font-size: 3em;
+    color: rgb(0, 0, 0);
+}
+
+.text_index {
+    font-size: 1.5em;
+    color: rgb(0, 0, 0);
+}
+
+.button-group {
+    background: rgba(23, 178, 221, 0.479);
+    border: 2px solid rgb(100, 100, 180);
+    width: 400px;
+    max-width: 80%;
+    aspect-ratio: 4 / 3;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    border-radius: 2%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.button-group:hover {
+    box-shadow: 10px 10px 0px 0px #000;
+    transform: scale(1.1);
+}
+
+.btn {
+    display: block;
+    color: #000;
+    width: 80%;
+    padding: 15px 20px;
+    border: 2px solid rgb(100, 100, 180);
+    text-align: center;
+    font-size: 1.8em;
+    text-decoration: none;
+    font-weight: bold;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.btn:hover {
+    box-shadow: 10px 10px 0px 0px #000;
+    transform: scale(1.05);
+}
