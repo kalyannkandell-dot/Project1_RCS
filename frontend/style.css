@@ -12,6 +12,7 @@ body {
     font-family: 'Courier New', monospace;
     color: #000;          /* add this */
     font-weight: 500;     /* add this */
+    font-size: 2rem;
 }
 
 /* ========== FLOATING ITEM ========== */
@@ -104,7 +105,7 @@ header .header_right a {
     transition: transform .3s ease;
     height: 100vh;
     background-color: rgb(100, 100, 180);
-    width: 25%;
+    width: 15%;
     min-width: 200px;
     pointer-events: none;
 }
@@ -127,12 +128,11 @@ header .header_right a {
 }
 
 #sidebar ul li {
-    width: 80%;
+    width: 70%;
     border: 2px solid black;
     padding: .4em .6em;
     background-color: rgb(60, 98, 132);
-    display: flex;
-    align-items: center;
+   
 }
 
 #sidebar ul li a {
@@ -140,6 +140,9 @@ header .header_right a {
     color: #000;
     font-weight: bold;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* ========== LANDING PAGE ========== */
@@ -163,8 +166,9 @@ header .header_right a {
 }
 
 .text_index {
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: rgb(0, 0, 0);
+    text-shadow: 1px 1px 0px black;
 }
 
 .button-group {
@@ -246,6 +250,7 @@ main.center {
     justify-content: space-around;
     gap: 1rem;
     padding: 30px 20px;
+    font-size: 2rem;
 }
 
 .auth_box:hover {
@@ -255,20 +260,21 @@ main.center {
 
 .auth_title {
     text-align: center;
-    font-size: 2rem;
+    font-size: 3rem;
     color: rgb(1, 2, 2);
     text-shadow: 2px 0px 3px rgb(100, 100, 180);
 }
 
 .auth_subtitle {
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 
 form {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    font-size: 2rem;
 }
 
 .auth_label {
@@ -347,6 +353,8 @@ form {
     border: 2px solid rgb(100, 100, 180);
     border-radius: 2%;
     padding: 1rem 1.5rem;
+    font-size: 2rem;
+
 }
 
 .dash_grid {
@@ -555,6 +563,10 @@ form {
     justify-content: space-between;
     gap: 1rem;
     flex-wrap: wrap;
+}
+
+#change_pic_btn{
+    height: 40px;
 }
 
 /* ========== TABS ========== */
