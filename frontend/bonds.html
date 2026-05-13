@@ -1,0 +1,125 @@
+<!-- full ai -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamro Cloud - Groups</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="bonds.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <div class="header_left">
+            <button id="hamburger" class="floting_item">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="images/logo.png" alt="" class="head_logo">
+        </div>
+
+        <h1>HAMRO CLOUD</h1>
+
+        <div class="header_right">
+            <form role="search">
+                <input type="search" id="search" name="query" placeholder="Search groups...">
+            </form>
+            <a href="profile.html"><img src="images/profilepic.png" alt="" id="avatar" class="floting_item"></a>
+        </div>
+    </header>
+
+    <nav id="sidebar">
+        <ul>
+            <li class="floting_item"><a href="dashbord.html">Dashboard</a></li>
+            <li class="floting_item"><a href="files.html">My Files</a></li>
+            <li class="floting_item"><a href="bonds.html">Groups</a></li>
+            <li class="floting_item"><a href="shared.html">Shared</a></li>
+            <li class="floting_item"><a href="profile.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <main class="dash_main">
+
+        <!-- PAGE HEADER -->
+        <div class="dash_section_head">
+            <h2>My Groups</h2>
+            <button id="create_group_btn" class="btn floting_item">+ New Group</button>
+        </div>
+
+        <!-- CREATE GROUP FORM (hidden by default) -->
+        <section class="dash_card" id="create_group_form" style="display:none;">
+            <h2 style="margin-bottom: 1rem;">Create New Group</h2>
+            <form id="new_group">
+                <label class="auth_label" for="group_name">Group Name</label>
+                <input type="text" id="group_name" class="auth_field" placeholder="e.g. CS Project Team" required>
+
+                <label class="auth_label" for="group_desc" style="margin-top: 0.75rem;">Description</label>
+                <input type="text" id="group_desc" class="auth_field" placeholder="What is this group for?">
+
+                <label class="auth_label" for="invite_email" style="margin-top: 0.75rem;">Invite Members (email)</label>
+                <input type="email" id="invite_email" class="auth_field" placeholder="member@email.com">
+
+                <button type="submit" id="auth_button" style="margin-top: 0.75rem;">Create Group</button>
+            </form>
+        </section>
+
+        <!-- GROUPS LIST -->
+        <section class="dash_section">
+            <h2>Groups You're In</h2>
+
+            <a href="group.html" class="dash_card group_card floting_item">
+                <div class="group_avatar">CS</div>
+                <div class="file_meta">
+                    <strong>CS Project Team</strong>
+                    <small>4 members · 12 files · Created by you</small>
+                </div>
+                <span class="group_badge">Admin</span>
+            </a>
+
+            <a href="group.html" class="dash_card group_card floting_item">
+                <div class="group_avatar">BD</div>
+                <div class="file_meta">
+                    <strong>BCA Department</strong>
+                    <small>18 members · 34 files · Created by Aayush</small>
+                </div>
+                <span class="group_badge">Member</span>
+            </a>
+
+            <a href="group.html" class="dash_card group_card floting_item">
+                <div class="group_avatar">PR</div>
+                <div class="file_meta">
+                    <strong>Personal Research</strong>
+                    <small>2 members · 5 files · Created by you</small>
+                </div>
+                <span class="group_badge">Admin</span>
+            </a>
+
+        </section>
+
+        <!-- PENDING INVITES -->
+        <section class="dash_section">
+            <h2>Pending Invites</h2>
+
+            <div class="dash_card group_card">
+                <div class="group_avatar">IT</div>
+                <div class="file_meta">
+                    <strong>IT Club</strong>
+                    <small>Invited by Albert · 10 members</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Accept</a>
+                    <a href="#" class="btn">Decline</a>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer></footer>
+</body>
+</html>

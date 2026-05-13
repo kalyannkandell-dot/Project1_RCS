@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -49,5 +49,189 @@
     <footer>
 
     </footer>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamro Cloud - Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="dashboard.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <div class="header_left">
+            <button id="hamburger" class="floting_item">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="images/logo.png" alt="" class="head_logo">
+        </div>
+
+        <h1>HAMRO CLOUD</h1>
+
+        <div class="header_right">
+            <form role="search">
+                <input type="search" id="search" name="query" placeholder="Search files...">
+            </form>
+            <a href="profile.html"><img src="images/profilepic.png" alt="" id="avatar" class="floting_item"></a>
+        </div>
+    </header>
+
+    <nav id="sidebar">
+        <ul>
+            <li class="floting_item"><a href="dashbord.html">Dashboard</a></li>
+            <li class="floting_item"><a href="files.html">My Files</a></li>
+            <li class="floting_item"><a href="bonds.html">Groups</a></li>
+            <li class="floting_item"><a href="shared.html">Shared</a></li>
+            <li class="floting_item"><a href="profile.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <main class="dash_main">
+
+        <!-- STORAGE -->
+        <section class="dash_card">
+            <p class="dash_label">Storage — <strong>2.3 GB / 10 GB</strong></p>
+            <div class="storage_bar">
+                <div class="storage_fill" style="width:23%"></div>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section class="dash_grid">
+            <div class="dash_card dash_stat floting_item">
+                <span class="dash_label">Total Files</span>
+                <strong class="dash_num">48</strong>
+            </div>
+            <div class="dash_card dash_stat floting_item">
+                <span class="dash_label">Shared With Me</span>
+                <strong class="dash_num">12</strong>
+            </div>
+            <div class="dash_card dash_stat floting_item">
+                <span class="dash_label">My Groups</span>
+                <strong class="dash_num">3</strong>
+            </div>
+            <div class="dash_card dash_stat floting_item">
+                <span class="dash_label">Active Links</span>
+                <strong class="dash_num">7</strong>
+            </div>
+        </section>
+
+        <!-- QUICK ACTIONS -->
+        <section class="dash_section">
+            <div class="dash_section_head">
+                <h2>Quick Actions</h2>
+            </div>
+            <div class="dash_grid">
+                <a href="files.html" class="dash_card dash_action floting_item">⬆ Upload File</a>
+                <a href="files.html" class="dash_card dash_action floting_item">📁 My Files</a>
+                <a href="bonds.html" class="dash_card dash_action floting_item">👥 My Groups</a>
+                <a href="shared.html" class="dash_card dash_action floting_item">🔗 Shared</a>
+            </div>
+        </section>
+
+        <!-- RECENT FILES -->
+        <section class="dash_section">
+            <div class="dash_section_head">
+                <h2>Recent Files</h2>
+                <a href="files.html">View All →</a>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">📄</span>
+                <div class="file_meta">
+                    <strong>project_report.pdf</strong>
+                    <small>1.2 MB · 2 hours ago</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                </div>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">💾</span>
+                <div class="file_meta">
+                    <strong>database_backup.sql</strong>
+                    <small>4.8 MB · Yesterday</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                </div>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">🖼</span>
+                <div class="file_meta">
+                    <strong>campus_photo.jpg</strong>
+                    <small>3.1 MB · 2 days ago</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                </div>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">📄</span>
+                <div class="file_meta">
+                    <strong>notes_chapter3.docx</strong>
+                    <small>540 KB · 3 days ago</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- GROUPS -->
+        <section class="dash_section">
+            <div class="dash_section_head">
+                <h2>My Groups</h2>
+                <a href="bonds.html">View All →</a>
+            </div>
+            <div class="dash_grid">
+
+                <a href="group.html" class="dash_card group_card floting_item">
+                    <div class="group_avatar">CS</div>
+                    <div class="file_meta">
+                        <strong>CS Project Team</strong>
+                        <small>4 members · 12 files</small>
+                    </div>
+                </a>
+
+                <a href="group.html" class="dash_card group_card floting_item">
+                    <div class="group_avatar">BD</div>
+                    <div class="file_meta">
+                        <strong>BCA Department</strong>
+                        <small>18 members · 34 files</small>
+                    </div>
+                </a>
+
+                <a href="group.html" class="dash_card group_card floting_item">
+                    <div class="group_avatar">PR</div>
+                    <div class="file_meta">
+                        <strong>Personal Research</strong>
+                        <small>2 members · 5 files</small>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer></footer>
 </body>
 </html>

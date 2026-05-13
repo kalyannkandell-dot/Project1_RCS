@@ -1,0 +1,125 @@
+<!-- ai -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamro Cloud - Profile</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="profile.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <div class="header_left">
+            <button id="hamburger" class="floting_item">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="images/logo.png" alt="" class="head_logo">
+        </div>
+
+        <h1>HAMRO CLOUD</h1>
+
+        <div class="header_right">
+            <form role="search">
+                <input type="search" id="search" name="query" placeholder="Search files...">
+            </form>
+            <a href="profile.html"><img src="images/profilepic.png" alt="" id="avatar" class="floting_item"></a>
+        </div>
+    </header>
+
+    <nav id="sidebar">
+        <ul>
+            <li class="floting_item"><a href="dashbord.html">Dashboard</a></li>
+            <li class="floting_item"><a href="files.html">My Files</a></li>
+            <li class="floting_item"><a href="bonds.html">Groups</a></li>
+            <li class="floting_item"><a href="shared.html">Shared</a></li>
+            <li class="floting_item"><a href="profile.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <main class="dash_main">
+
+        <!-- PROFILE CARD -->
+        <section class="dash_card profile_card">
+            <img src="images/profilepic.png" alt="Profile Picture" id="profile_pic_lg">
+            <div class="file_meta">
+                <h2>Kalyan Kandel</h2>
+                <small>kalyan@email.com</small>
+                <small>Member since January 2025</small>
+            </div>
+            <button class="btn floting_item" id="change_pic_btn">Change Photo</button>
+            <input type="file" id="pic_input" accept="image/*" style="display:none;">
+        </section>
+
+        <!-- STORAGE -->
+        <section class="dash_card">
+            <p class="dash_label">Storage — <strong>2.3 GB / 10 GB</strong></p>
+            <div class="storage_bar">
+                <div class="storage_fill" style="width:23%"></div>
+            </div>
+        </section>
+
+        <!-- ACCOUNT INFO -->
+        <section class="dash_section">
+            <h2>Account Info</h2>
+            <div class="dash_card">
+                <form id="update_profile">
+                    <label class="auth_label" for="full_name">Full Name</label>
+                    <input type="text" id="full_name" class="auth_field" value="Kalyan Kandel">
+
+                    <label class="auth_label" for="email" style="margin-top: 0.75rem;">Email</label>
+                    <input type="email" id="email" class="auth_field" value="kalyan@email.com">
+
+                    <button type="submit" id="auth_button" style="margin-top: 0.75rem;">Save Changes</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- CHANGE PASSWORD -->
+        <section class="dash_section">
+            <h2>Change Password</h2>
+            <div class="dash_card">
+                <form id="change_password">
+                    <label class="auth_label" for="current_pass">Current Password</label>
+                    <input type="password" id="current_pass" class="auth_field" required>
+
+                    <label class="auth_label" for="new_pass" style="margin-top: 0.75rem;">New Password</label>
+                    <input type="password" id="new_pass" class="auth_field" required>
+
+                    <label class="auth_label" for="confirm_pass" style="margin-top: 0.75rem;">Confirm New Password</label>
+                    <input type="password" id="confirm_pass" class="auth_field" required>
+
+                    <button type="submit" id="auth_button" style="margin-top: 0.75rem;">Update Password</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- DANGER ZONE -->
+        <section class="dash_section">
+            <h2>Danger Zone</h2>
+            <div class="dash_card danger_zone">
+                <div class="file_meta">
+                    <strong>Log Out</strong>
+                    <small>Sign out of your account on this device</small>
+                </div>
+                <a href="index.html" class="btn btn_danger floting_item">Log Out</a>
+            </div>
+            <div class="dash_card danger_zone">
+                <div class="file_meta">
+                    <strong>Delete Account</strong>
+                    <small>Permanently delete your account and all your files. This cannot be undone.</small>
+                </div>
+                <button class="btn btn_danger floting_item" id="delete_account_btn">Delete Account</button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer></footer>
+</body>
+</html>

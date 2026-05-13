@@ -1,0 +1,169 @@
+<!-- all ai -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamro Cloud - My Files</title>
+    <link rel="icon" type="image/x-icon" href="images/logo.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="files.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <div class="header_left">
+            <button id="hamburger" class="floting_item">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </button>
+            <img src="images/logo.png" alt="" class="head_logo">
+        </div>
+
+        <h1>HAMRO CLOUD</h1>
+
+        <div class="header_right">
+            <form role="search">
+                <input type="search" id="search" name="query" placeholder="Search files...">
+            </form>
+            <a href="profile.html"><img src="images/profilepic.png" alt="" id="avatar" class="floting_item"></a>
+        </div>
+    </header>
+
+    <nav id="sidebar">
+        <ul>
+            <li class="floting_item"><a href="dashbord.html">Dashboard</a></li>
+            <li class="floting_item"><a href="files.html">My Files</a></li>
+            <li class="floting_item"><a href="bonds.html">Groups</a></li>
+            <li class="floting_item"><a href="shared.html">Shared</a></li>
+            <li class="floting_item"><a href="profile.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <main class="dash_main">
+
+        <!-- TOP BAR -->
+        <div class="dash_section_head">
+            <h2>My Files</h2>
+            <button id="upload_btn" class="btn floting_item">⬆ Upload File</button>
+        </div>
+
+        <!-- HIDDEN FILE INPUT -->
+        <input type="file" id="file_input" style="display:none;">
+
+        <!-- UPLOAD AREA (shown when upload clicked) -->
+        <section class="dash_card" id="upload_area" style="display:none;">
+            <div id="drop_zone" class="drop_zone">
+                <p>Drag & drop file here</p>
+                <p><small>or</small></p>
+                <button class="btn floting_item" id="browse_btn">Browse</button>
+            </div>
+        </section>
+
+        <!-- STORAGE BAR -->
+        <section class="dash_card">
+            <p class="dash_label">Storage — <strong>2.3 GB / 10 GB</strong></p>
+            <div class="storage_bar">
+                <div class="storage_fill" style="width:23%"></div>
+            </div>
+        </section>
+
+        <!-- FILTER BAR -->
+        <div class="filter_bar">
+            <button class="filter_btn active" data-filter="all">All</button>
+            <button class="filter_btn" data-filter="pdf">PDF</button>
+            <button class="filter_btn" data-filter="image">Images</button>
+            <button class="filter_btn" data-filter="doc">Docs</button>
+            <button class="filter_btn" data-filter="other">Other</button>
+        </div>
+
+        <!-- FILE LIST -->
+        <section class="dash_section">
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">📄</span>
+                <div class="file_meta">
+                    <strong>project_report.pdf</strong>
+                    <small>1.2 MB · 2 hours ago</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                    <a href="#" class="btn btn_danger">Delete</a>
+                </div>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">💾</span>
+                <div class="file_meta">
+                    <strong>database_backup.sql</strong>
+                    <small>4.8 MB · Yesterday</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                    <a href="#" class="btn btn_danger">Delete</a>
+                </div>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">🖼</span>
+                <div class="file_meta">
+                    <strong>campus_photo.jpg</strong>
+                    <small>3.1 MB · 2 days ago</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                    <a href="#" class="btn btn_danger">Delete</a>
+                </div>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">📄</span>
+                <div class="file_meta">
+                    <strong>notes_chapter3.docx</strong>
+                    <small>540 KB · 3 days ago</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                    <a href="#" class="btn btn_danger">Delete</a>
+                </div>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">📊</span>
+                <div class="file_meta">
+                    <strong>marks_sheet.xlsx</strong>
+                    <small>210 KB · 4 days ago</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                    <a href="#" class="btn btn_danger">Delete</a>
+                </div>
+            </div>
+
+            <div class="dash_card file_row floting_item">
+                <span class="file_icon">🖼</span>
+                <div class="file_meta">
+                    <strong>id_card_scan.png</strong>
+                    <small>890 KB · 5 days ago</small>
+                </div>
+                <div class="file_btns">
+                    <a href="#" class="btn">Download</a>
+                    <a href="#" class="btn">Share</a>
+                    <a href="#" class="btn btn_danger">Delete</a>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer></footer>
+</body>
+</html>

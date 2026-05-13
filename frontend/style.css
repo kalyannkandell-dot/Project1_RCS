@@ -7,13 +7,225 @@
 
 /* ========== GLOBAL ========== */
 body {
-    width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     background-color: rgb(60, 98, 132);
+    font-family: 'Courier New', monospace;
+    color: #000;          /* add this */
+    font-weight: 500;     /* add this */
+}
+
+/* ========== FLOATING ITEM ========== */
+.floting_item {
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+.floting_item:hover {
+    transform: scale(1.05);
+    box-shadow: 5px 5px 0 0 black;
+}
+
+/* ========== HEADER ========== */
+header {
+    width: 100%;
+    height: 10vh;
+    background: rgb(100, 100, 180);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+header h1 {
+    font-size: 3rem;
+}
+
+header div {
+    height: 100%;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.head_logo {
+    height: 80%;
+    clip-path: inset(5px 1px 0px 0px);
+}
+
+#hamburger {
+    height: 60%;
+    aspect-ratio: 1;
+    background: none;
+    border: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0;
+    gap: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+#hamburger div {
+    background-color: rgb(60, 98, 132);
+    border: 2px solid black;
+}
+
+form[role="search"] input {
+    width: 200px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
     font-family: 'Courier New', monospace;
 }
 
-/* ========== LAYOUT ========== */
+#avatar {
+    height: 80%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: block;
+}
+
+header .header_right a {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* ========== SIDEBAR ========== */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    transform: scale(0);
+    transform-origin: top left;
+    transition: transform .3s ease;
+    height: 100vh;
+    background-color: rgb(100, 100, 180);
+    width: 25%;
+    min-width: 200px;
+    pointer-events: none;
+}
+
+#sidebar.active {
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+#sidebar ul {
+    height: 80%;
+    width: 100%;
+    font-size: 1.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    list-style: none;
+    padding-top: 60px;
+}
+
+#sidebar ul li {
+    width: 80%;
+    border: 2px solid black;
+    padding: .4em .6em;
+    background-color: rgb(60, 98, 132);
+    display: flex;
+    align-items: center;
+}
+
+#sidebar ul li a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    width: 100%;
+}
+
+/* ========== LANDING PAGE ========== */
+.hero {
+    background-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgb(60, 98, 132) 65%), url('images/landing-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    width: 100%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 25px;
+}
+
+#h1_index {
+    font-size: 3rem;
+    color: rgb(0, 0, 0);
+}
+
+.text_index {
+    font-size: 1.5rem;
+    color: rgb(0, 0, 0);
+}
+
+.button-group {
+    background: rgba(23, 178, 221, 0.479);
+    border: 2px solid rgb(100, 100, 180);
+    width: 400px;
+    max-width: 80%;
+    aspect-ratio: 4 / 3;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    border-radius: 2%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.button-group:hover {
+    box-shadow: 10px 10px 0px 0px #000;
+    transform: scale(1.05);
+}
+
+/* ========== BUTTONS ========== */
+.btn {
+    display: inline-block;
+    color: #000;
+    padding: 6px 14px;
+    border: 2px solid rgb(100, 100, 180);
+    text-align: center;
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    background: none;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.btn:hover {
+    box-shadow: 5px 5px 0 0 black;
+    transform: scale(1.05);
+}
+
+/* landing page btns are bigger */
+.button-group .btn {
+    width: 80%;
+    padding: 15px 20px;
+    font-size: 1.8rem;
+}
+
+.btn_danger {
+    border-color: #cc0000;
+    color: #cc0000;
+}
+
+.btn_danger:hover {
+    background: #cc0000;
+    color: #fff;
+    box-shadow: 5px 5px 0 0 black;
+}
+
+/* ========== AUTH PAGES ========== */
 main.center {
     display: flex;
     flex-direction: column;
@@ -22,24 +234,23 @@ main.center {
     padding-top: 5%;
 }
 
-/* ========== AUTH COMPONENTS ========== */
 .auth_box {
     border: 2px solid rgb(100, 100, 180);
     width: 90%;
     max-width: 400px;
-    aspect-ratio: 1 / 1.25;
     background: rgba(23, 178, 221, 0.479);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
     border-radius: 2%;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    gap: 1rem;
     padding: 30px 20px;
 }
 
 .auth_box:hover {
     box-shadow: 10px 10px 0px 0px #000;
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .auth_title {
@@ -47,13 +258,11 @@ main.center {
     font-size: 2rem;
     color: rgb(1, 2, 2);
     text-shadow: 2px 0px 3px rgb(100, 100, 180);
-    margin: 0;
 }
 
 .auth_subtitle {
     text-align: center;
     font-size: 0.8rem;
-    margin: 0;
 }
 
 form {
@@ -72,6 +281,7 @@ form {
     padding: 8px;
     border: 1px solid rgb(100, 100, 180);
     border-radius: 4px;
+    font-family: 'Courier New', monospace;
 }
 
 #forgot_link {
@@ -92,6 +302,9 @@ form {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 1rem;
 }
 
 #auth_button:hover {
@@ -100,17 +313,15 @@ form {
 
 .auth_footer {
     font-size: 0.8rem;
-    margin: 0;
 }
 
-/* ========== DIVIDER ========== */
 .divider {
     display: flex;
     width: 100%;
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin: 10px 0;
+    margin: 5px 0;
 }
 
 .divider::before,
@@ -121,169 +332,264 @@ form {
     flex: 1;
 }
 
-.hero {
-    background-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgb(60, 98, 132) 65%), url('images/landing-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
-    width: 100%;
-    padding: 30px;
+/* ========== DASHBOARD LAYOUT ========== */
+.dash_main {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 25px;
+    gap: 1.5rem;
+    padding: 2rem 5%;
+    max-width: 1200px;  /* add this */
+    margin: 0 auto;     /* add this */
 }
 
-#h1_index {
-    font-size: 3em;
-    color: rgb(0, 0, 0);
-}
-
-.text_index {
-    font-size: 1.5em;
-    color: rgb(0, 0, 0);
-}
-
-.button-group {
+.dash_card {
     background: rgba(23, 178, 221, 0.479);
     border: 2px solid rgb(100, 100, 180);
-    width: 400px;
-    max-width: 80%;
-    aspect-ratio: 4 / 3;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
     border-radius: 2%;
+    padding: 1rem 1.5rem;
+}
+
+.dash_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.dash_stat {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
-}
-
-.button-group:hover {
-    box-shadow: 10px 10px 0px 0px #000;
-    transform: scale(1.1);
-}
-
-.btn {
-    display: block;
-    color: #000;
-    width: 80%;
-    padding: 15px 20px;
-    border: 2px solid rgb(100, 100, 180);
+    gap: 0.3rem;
     text-align: center;
-    font-size: 1.8em;
+}
+
+.dash_num {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.dash_label {
+    font-size: 0.85rem;
+}
+
+.dash_action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+}
+
+.dash_section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dash_section_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dash_section_head a {
+    font-size: 0.85rem;
+    color: #000;
     text-decoration: none;
     font-weight: bold;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.btn:hover {
-    box-shadow: 10px 10px 0px 0px #000;
-    transform: scale(1.05);
+.dash_section_head h2 {
+    font-size: 1.2rem;
 }
-header {
+
+/* ========== FILE ROWS ========== */
+.file_row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file_icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.file_meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.file_meta strong {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file_btns {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* ========== STORAGE BAR ========== */
+.storage_bar {
     width: 100%;
-    height: 10%;
+    height: 10px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 6px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.storage_fill {
+    height: 100%;
+    background: #0066cc;
+    border-radius: 6px;
+}
+
+/* ========== GROUP CARDS ========== */
+.group_card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: #000;
+    padding: 0.75rem 1rem;
+}
+
+.group_avatar {
+    width: 45px;
+    height: 45px;
     background: rgb(100, 100, 180);
+    border: 2px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.group_badge {
+    font-size: 0.75rem;
+    font-weight: bold;
+    border: 1px solid rgb(100, 100, 180);
+    padding: 3px 8px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.group_header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.group_avatar_lg {
+    width: 65px;
+    height: 65px;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+/* ========== FILES PAGE ========== */
+.drop_zone {
+    border: 2px dashed rgb(100, 100, 180);
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter_bar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter_btn {
+    padding: 6px 16px;
+    border: 2px solid rgb(100, 100, 180);
+    background: none;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.filter_btn.active,
+.filter_btn:hover {
+    background: rgb(100, 100, 180);
+    color: #000;
+}
+
+/* ========== PROFILE PAGE ========== */
+.profile_card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+#profile_pic_lg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid rgb(100, 100, 180);
+    flex-shrink: 0;
+}
+
+.danger_zone {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1rem;
-}
-header div{
-    height: 100%;
-    display: flex;
-    gap: 2rem;
-    align-items: center;
-    
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-#hamburger{
-    height: 60%;
-    aspect-ratio: 1;
+/* ========== TABS ========== */
+.tab_bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+}
+
+.tab_btn {
+    padding: 10px 24px;
+    border: 2px solid rgb(100, 100, 180);
+    border-right: none;
     background: none;
-    border: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0;
-    gap: 3px;
     cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
 }
 
-#hamburger div {
-    background-color: rgb(60, 98, 132);
-    border: 2px solid black;
-
-}
-.head_logo {
-    height: 80%;
-    clip-path: inset(5px 1px 0px 0px);
-}
-form[role="search"] input {
-    width: 300px;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
+.tab_btn:last-child {
+    border-right: 2px solid rgb(100, 100, 180);
 }
 
-#avatar {
-    height: 80%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-}
-#sidebar {
-    display: block;
-    transform: scale(0);
-    transform-origin: top left; /* shrinks from top-right corner */
-    transition: transform .3s ease;
-    height: 100vh;
-    background-color: rgb(100, 100, 180);
-    width: 25%;
-    pointer-events: none;
+.tab_btn.active,
+.tab_btn:hover {
+    background: rgb(100, 100, 180);
+    color: #000;
 }
 
-#sidebar.active {
-    transform: scale(1);
-    pointer-events: auto;
-}
-#sidebar ul {
-    height: 80%;
-    width: 100%;
-    font-size: 3em;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    list-style: none;
-}
-#sidebar ul li a {
-  text-decoration: none;
-  color: #000;
-  font-weight: bold;
+.dash_main form {
+    max-width: 500px;
 }
 
-#sidebar ul li{
-  
-  width: 80%;
-  border: 2px solid black;
-  padding: .25em;
-  height: 10%;
-  background-color: rgb(60, 98, 132);
-  display: flex;
-  place-items: center;
-}
-
-h1{
-    font-size: 5rem;
-}
-
-
-.floting_item {
-
-    transition: transform .3s ease, box-shadow .3s ease;
-}
-.floting_item:hover {
-    transform: scale(1.1);
-    box-shadow: 5px 5px 0 0 black;
+.dash_main #auth_button {
+    width: auto;
+    padding: 8px 24px;
 }
