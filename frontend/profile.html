@@ -1,4 +1,3 @@
-<!-- ai -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hamro Cloud - Profile</title>
     <link rel="icon" type="image/x-icon" href="images/logo.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="just.css">
+    
+    <script src="utils.js" defer></script>
     <script src="profile.js" defer></script>
+    
 </head>
 <body>
 
@@ -25,16 +27,16 @@
         <h1>HAMRO CLOUD</h1>
 
         <div class="header_right">
-            <form role="search">
-                <input type="search" id="search" name="query" placeholder="Search files...">
-            </form>
+            <!--  removed form wrapper,  caused page reload on Enter key -->
+            <input type="search" id="search" name="query" placeholder="Search files...">
+            <div id="search_results" class="search_dropdown" style="display:none;"></div>
             <a href="profile.html"><img src="images/profilepic.png" alt="" id="avatar" class="floting_item"></a>
         </div>
     </header>
 
     <nav id="sidebar">
         <ul>
-            <li class="floting_item"><a href="dashbord.html">Dashboard</a></li>
+            <li class="floting_item"><a href="dashboard.html">Dashboard</a></li>
             <li class="floting_item"><a href="files.html">My Files</a></li>
             <li class="floting_item"><a href="bonds.html">Groups</a></li>
             <li class="floting_item"><a href="shared.html">Shared</a></li>
@@ -44,43 +46,44 @@
 
     <main class="dash_main">
 
-        <!-- PROFILE CARD -->
+        <!-- profile -->
         <section class="dash_card profile_card">
-            <img src="images/profilepic.png" alt="Profile Picture" id="profile_pic_lg">
+            <img src="images/profilepic.png" alt="Profile Picture" id="profile_pic_lg" class="floting_item">
             <div class="file_meta">
-                <h2>Kalyan Kandel</h2>
-                <small>kalyan@email.com</small>
-                <small>Member since January 2025</small>
+                <h2 id="profile_name">Loading...</h2>
+                <small id="profile_email"></small>
+                <small id="profile_since"></small>
             </div>
             <button class="btn floting_item" id="change_pic_btn">Change Photo</button>
             <input type="file" id="pic_input" accept="image/*" style="display:none;">
         </section>
 
-        <!-- STORAGE -->
+        <!-- storage bar -->
         <section class="dash_card">
-            <p class="dash_label">Storage — <strong>2.3 GB / 10 GB</strong></p>
+            <p class="dash_label">Storage — <strong class="storage_numbers">Loading...</strong></p>
             <div class="storage_bar">
-                <div class="storage_fill" style="width:23%"></div>
+                <div class="storage_fill" style="width:0%"></div>
             </div>
         </section>
 
-        <!-- ACCOUNT INFO -->
+        <!-- account info -->
         <section class="dash_section">
             <h2>Account Info</h2>
             <div class="dash_card">
                 <form id="update_profile">
                     <label class="auth_label" for="full_name">Full Name</label>
-                    <input type="text" id="full_name" class="auth_field" value="Kalyan Kandel">
+                    <input type="text" id="full_name" class="auth_field" placeholder="Your name" required>
 
                     <label class="auth_label" for="email" style="margin-top: 0.75rem;">Email</label>
-                    <input type="email" id="email" class="auth_field" value="kalyan@email.com">
+                    <input type="email" id="email" class="auth_field" placeholder="Your email" required>
 
-                    <button type="submit" id="auth_button" style="margin-top: 0.75rem;">Save Changes</button>
+                    <p id="update_msg" style="font-size:0.85rem; margin-top:0.5rem;"></p>
+                    <button type="submit" class="floting_item" id="auth_button" style="margin-top: 0.75rem;">Save Changes</button>
                 </form>
             </div>
         </section>
 
-        <!-- CHANGE PASSWORD -->
+        <!-- changing password -->
         <section class="dash_section">
             <h2>Change Password</h2>
             <div class="dash_card">
@@ -94,12 +97,13 @@
                     <label class="auth_label" for="confirm_pass" style="margin-top: 0.75rem;">Confirm New Password</label>
                     <input type="password" id="confirm_pass" class="auth_field" required>
 
-                    <button type="submit" id="auth_button" style="margin-top: 0.75rem;">Update Password</button>
+                    <p id="password_msg" style="font-size:0.85rem; margin-top:0.5rem;"></p>
+                    <button type="submit" class="floting_item" id="auth_button" style="margin-top: 0.75rem;">Update Password</button>
                 </form>
             </div>
         </section>
 
-        <!-- DANGER ZONE -->
+        <!--danger zone-->
         <section class="dash_section">
             <h2>Danger Zone</h2>
             <div class="dash_card danger_zone">

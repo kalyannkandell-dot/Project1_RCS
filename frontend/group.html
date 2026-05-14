@@ -1,12 +1,12 @@
-<!-- all ai -->
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hamro Cloud - Group</title>
     <link rel="icon" type="image/x-icon" href="images/logo.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="just.css">
+    <script src="utils.js" defer></script>
     <script src="group.js" defer></script>
 </head>
 <body>
@@ -25,9 +25,8 @@
         <h1>HAMRO CLOUD</h1>
 
         <div class="header_right">
-            <form role="search">
-                <input type="search" id="search" name="query" placeholder="Search files...">
-            </form>
+            <input type="search" id="search" name="query" placeholder="Search files...">
+            <div id="search_results" class="search_dropdown" style="display:none;"></div>
             <a href="profile.html"><img src="images/profilepic.png" alt="" id="avatar" class="floting_item"></a>
         </div>
     </header>
@@ -44,121 +43,51 @@
 
     <main class="dash_main">
 
-        <!-- GROUP HEADER -->
-        <section class="dash_card group_header">
-            <div class="group_avatar group_avatar_lg">CS</div>
-            <div class="file_meta">
-                <h2>CS Project Team</h2>
-                <small>4 members · 12 files · Created by you</small>
-            </div>
-            <div class="file_btns">
-                <button class="btn floting_item" id="invite_btn">+ Invite</button>
-                <button class="btn btn_danger floting_item">Leave Group</button>
-            </div>
-        </section>
+    <!-- group header -->
+    <section class="dash_card group_header" id="group_header">
+        <div class="group_avatar group_avatar_lg" id="group_initials"></div>
+        <div class="file_meta">
+            <h2 id="group_name">Loading...</h2>
+            <small id="group_meta"></small>
+        </div>
+        <div class="file_btns">
+            <button class="btn floting_item" id="invite_btn">+ Invite</button>
+            <button class="btn btn_danger floting_item" id="leave_btn">Leave Group</button>
+        </div>
+    </section>
 
-        <!-- INVITE FORM (hidden by default) -->
-        <section class="dash_card" id="invite_form" style="display:none;">
-            <h2 style="margin-bottom: 1rem;">Invite Member</h2>
-            <form id="invite_submit">
-                <label class="auth_label" for="invite_email">Email</label>
-                <input type="email" id="invite_email" class="auth_field" placeholder="member@email.com" required>
-                <button type="submit" id="auth_button" style="margin-top: 0.75rem;">Send Invite</button>
-            </form>
-        </section>
+    <!-- invite form -->
+    <section class="dash_card" id="invite_form" style="display:none;">
+        <h2 style="margin-bottom: 1rem;">Invite Member</h2>
+        <form id="invite_submit">
+            <label class="auth_label" for="invite_email">Email</label>
+            <input type="email" id="invite_email" class="auth_field" placeholder="member@email.com" required>
+            <button type="submit" id="auth_button" style="margin-top: 0.75rem;">Send Invite</button>
+        </form>
+    </section>
 
-        <!-- MEMBERS -->
-        <section class="dash_section">
-            <h2>Members</h2>
+    <!-- members -->
+    <section class="dash_section">
+        <h2>Members</h2>
+        <div id="members_list">
+            <p>Loading...</p>
+        </div>
+    </section>
 
-            <div class="dash_card file_row floting_item">
-                <div class="group_avatar">KK</div>
-                <div class="file_meta">
-                    <strong>Kalyan Kandel</strong>
-                    <small>kalyan@email.com · Admin</small>
-                </div>
-                <span class="group_badge">You</span>
-            </div>
+    <!-- group files -->
+    <section class="dash_section">
+        <div class="dash_section_head">
+            <h2>Group Files</h2>
+            <button class="btn floting_item" id="upload_group_btn">⬆ Upload</button>
+        </div>
+        <input type="file" id="group_file_input" style="display:none;">
+        <div id="group_files_list">
+            <p>Loading...</p>
+        </div>
+    </section>
 
-            <div class="dash_card file_row floting_item">
-                <div class="group_avatar">AS</div>
-                <div class="file_meta">
-                    <strong>Aayush Subedi</strong>
-                    <small>aayush@email.com · Member</small>
-                </div>
-                <a href="#" class="btn btn_danger">Remove</a>
-            </div>
-
-            <div class="dash_card file_row floting_item">
-                <div class="group_avatar">AB</div>
-                <div class="file_meta">
-                    <strong>Albert Baral</strong>
-                    <small>albert@email.com · Member</small>
-                </div>
-                <a href="#" class="btn btn_danger">Remove</a>
-            </div>
-
-            <div class="dash_card file_row floting_item">
-                <div class="group_avatar">RK</div>
-                <div class="file_meta">
-                    <strong>Raj Kumar</strong>
-                    <small>raj@email.com · Member</small>
-                </div>
-                <a href="#" class="btn btn_danger">Remove</a>
-            </div>
-
-        </section>
-
-        <!-- GROUP FILES -->
-        <section class="dash_section">
-            <div class="dash_section_head">
-                <h2>Group Files</h2>
-                <button class="btn floting_item" id="upload_group_btn">⬆ Upload</button>
-            </div>
-
-            <input type="file" id="group_file_input" style="display:none;">
-
-            <div class="dash_card file_row floting_item">
-                <span class="file_icon">📄</span>
-                <div class="file_meta">
-                    <strong>project_proposal.pdf</strong>
-                    <small>2.1 MB · Uploaded by Kalyan · 1 day ago</small>
-                </div>
-                <div class="file_btns">
-                    <a href="#" class="btn">Download</a>
-                    <a href="#" class="btn btn_danger">Delete</a>
-                </div>
-            </div>
-
-            <div class="dash_card file_row floting_item">
-                <span class="file_icon">📊</span>
-                <div class="file_meta">
-                    <strong>task_breakdown.xlsx</strong>
-                    <small>340 KB · Uploaded by Aayush · 2 days ago</small>
-                </div>
-                <div class="file_btns">
-                    <a href="#" class="btn">Download</a>
-                    <a href="#" class="btn btn_danger">Delete</a>
-                </div>
-            </div>
-
-            <div class="dash_card file_row floting_item">
-                <span class="file_icon">📄</span>
-                <div class="file_meta">
-                    <strong>security_plan.docx</strong>
-                    <small>180 KB · Uploaded by Albert · 3 days ago</small>
-                </div>
-                <div class="file_btns">
-                    <a href="#" class="btn">Download</a>
-                    <a href="#" class="btn btn_danger">Delete</a>
-                </div>
-            </div>
-
-        </section>
-
-    </main>
+</main>
 
     <footer></footer>
 </body>
 </html>
-
