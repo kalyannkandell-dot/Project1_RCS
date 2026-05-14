@@ -1,10 +1,7 @@
+const API_BASE = "http://127.0.0.1:3000";
 
-const API_BASE = ""; 
 
-
-// helper functions
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
+// ========== HELPERS ==========
 function formatSize(bytes) {
     if (bytes < 1024) return bytes + " B";
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
@@ -36,7 +33,25 @@ function getFileIcon(name) {
 }
 
 
-// toast
+// ========== AUTH HEADERS ==========
+// FIX: was reading "token" in one place and "hc_token" in another — unified to "hc_token"
+function getAuthHeaders() {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("hc_token")
+    };
+}
+
+// Use this for FormData uploads — no Content-Type, browser sets it with the correct boundary
+function getAuthHeadersNoContent() {
+    // FIX: was reading "token" instead of "hc_token"
+    return {
+        "Authorization": "Bearer " + localStorage.getItem("hc_token")
+    };
+}
+
+
+// ========== TOAST ==========
 function toast(msg, type = 'error') {
     let el = document.getElementById('hc_toast');
     if (!el) {
@@ -60,7 +75,7 @@ function toast(msg, type = 'error') {
 }
 
 
-// sidebar
+// ========== SIDEBAR ==========
 function initSidebar() {
     document.querySelector("#hamburger").addEventListener("click", () => {
         document.querySelector("#sidebar").classList.toggle("active");
@@ -76,10 +91,8 @@ function initSidebar() {
 }
 
 
-// search button 
-function initSearch(getRows) {
-    // getRows is an optional function that returns items to search
-    // if not passed, searches .file_row elements on the page
+// ========== SEARCH ==========
+function initSearch() {
     const input = document.querySelector("#search");
     const dropdown = document.querySelector("#search_results");
     if (!input || !dropdown) return;
@@ -93,6 +106,7 @@ function initSearch(getRows) {
         }
 
         const matches = [];
+
         document.querySelectorAll(".file_row").forEach(row => {
             const nameEl = row.querySelector("strong");
             if (nameEl && nameEl.textContent.toLowerCase().includes(query)) {
@@ -103,7 +117,6 @@ function initSearch(getRows) {
             }
         });
 
-        // also search group cards
         document.querySelectorAll(".group_card").forEach(card => {
             const nameEl = card.querySelector("strong");
             if (nameEl && nameEl.textContent.toLowerCase().includes(query)) {
@@ -121,26 +134,32 @@ function initSearch(getRows) {
                 </div>
             `).join("");
         }
+
         dropdown.style.display = "block";
     });
 
     document.addEventListener("click", (e) => {
-        if (!e.target.closest("form[role='search']")) {
+        if (!e.target.closest("#search") && !e.target.closest("#search_results")) {
             dropdown.style.display = "none";
         }
     });
 }
 
 
-// profile avater
+// ========== PROFILE AVATAR ==========
 async function loadUserHeader() {
     try {
-        const res = await fetch(`${API_BASE}/api/user/me`);
+        const res = await fetch(`${API_BASE}/api/user/me`, {
+            headers: getAuthHeaders()
+        });
+        if (!res.ok) return;
         const data = await res.json();
-        if (data.avatarUrl) {
-            document.querySelector("#avatar").src = data.avatarUrl;
+        const avatar = document.querySelector("#avatar");
+        if (avatar && data.avatarUrl) {
+            avatar.src = data.avatarUrl;
         }
     } catch (err) {
-        document.querySelector("#avatar").src = "images/profilepic.png";
+        const avatar = document.querySelector("#avatar");
+        if (avatar) avatar.src = "images/profilepic.png";
     }
 }

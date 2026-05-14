@@ -6,6 +6,7 @@
     <title>Hamro cloud</title>
     <link rel="icon" type="image/x-icon" href="images/logo.png">
     <link rel="stylesheet" href="just.css">
+    <script src="utils.js" defer></script>
     <script src="login.js" defer></script>
 </head>
 
@@ -22,7 +23,7 @@
                 <input type="password" name="password" id="password" class="auth_field" required>
                 <p><a href="forgot.html" id="forgot_link">forgot your password ?</a></p>
 
-                <button type="submit" id="auth_button">login</button>
+                <button type="submit" id="auth_button" onclick="login()">login</button>
             </form>
 
                <div class="divider">

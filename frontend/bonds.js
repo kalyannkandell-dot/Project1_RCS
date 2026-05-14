@@ -1,37 +1,48 @@
+// bonds.js — Groups & Invites page
 
-// upto line 35 is dummy api changed upon intigration 
-const DUMMY_GROUPS = [
-    { id: "1", name: "CS Project Team",   initials: "CS", memberCount: 4,  fileCount: 12, role: "Admin"  },
-    { id: "2", name: "BCA Department",    initials: "BD", memberCount: 18, fileCount: 34, role: "Member" },
-    { id: "3", name: "Personal Research", initials: "PR", memberCount: 2,  fileCount: 5,  role: "Admin"  },
-];
+// FIX: all API calls were missing Authorization headers — added getAuthHeaders() throughout
 
-const DUMMY_INVITES = [
-    { id: "1", groupName: "Web Dev Club",    initials: "WD", invitedBy: "Aayush", memberCount: 8  },
-    { id: "2", groupName: "Design Society",  initials: "DS", invitedBy: "Albert", memberCount: 12 },
-];
-
-let groupStore = [...DUMMY_GROUPS];
-
-function apiFetchGroups()  { return Promise.resolve([...groupStore]); }
-function apiFetchInvites() { return Promise.resolve([...DUMMY_INVITES]); }
-
-function apiCreateGroup(name, desc, inviteEmail) {
-    const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
-    const newGroup = { id: String(Date.now()), name, initials, memberCount: 1, fileCount: 0, role: "Admin" };
-    groupStore.unshift(newGroup);
-    return Promise.resolve(newGroup);
-    // changed upon intigration 
+async function apiFetchGroups() {
+    const res = await fetch(`${API_BASE}/api/groups`, {
+        headers: getAuthHeaders()
+    });
+    return res.json();
 }
 
-function apiAcceptInvite(inviteId) {
-    return Promise.resolve({ success: true });
-    // changed upon intigration 
+async function apiFetchInvites() {
+    // FIX: wrong endpoint was "/api/groups/invites" — correct is "/api/groups/invites/me"
+    const res = await fetch(`${API_BASE}/api/groups/invites/me`, {
+        headers: getAuthHeaders()
+    });
+    return res.json();
 }
 
-function apiDeclineInvite(inviteId) {
-    return Promise.resolve({ success: true });
-    // changed upon intigration
+async function apiCreateGroup(name, desc, inviteEmail) {
+    const res = await fetch(`${API_BASE}/api/groups`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        // FIX: backend expects "description" not "desc"
+        body: JSON.stringify({ name, description: desc, inviteEmail })
+    });
+    return res.json();
+}
+
+async function apiAcceptInvite(inviteId) {
+    const res = await fetch(`${API_BASE}/api/groups/invites/${inviteId}/accept`, {
+        method: "POST",
+        headers: getAuthHeaders()
+    });
+    return res.json();
+}
+
+async function apiDeclineInvite(inviteId) {
+    // FIX: was sending DELETE to wrong endpoint "/api/groups/invites/:id"
+    // Correct endpoint is POST /api/groups/invites/:id/decline
+    const res = await fetch(`${API_BASE}/api/groups/invites/${inviteId}/decline`, {
+        method: "POST",
+        headers: getAuthHeaders()
+    });
+    return res.json();
 }
 
 
@@ -41,7 +52,7 @@ async function loadGroups() {
     try {
         const groups = await apiFetchGroups();
 
-        if (groups.length === 0) {
+        if (!Array.isArray(groups) || groups.length === 0) {
             container.innerHTML = "<p>You are not in any groups yet.</p>";
             return;
         }
@@ -70,7 +81,7 @@ async function loadInvites() {
     try {
         const invites = await apiFetchInvites();
 
-        if (invites.length === 0) {
+        if (!Array.isArray(invites) || invites.length === 0) {
             container.innerHTML = "<p>No pending invites.</p>";
             return;
         }
@@ -123,7 +134,7 @@ async function declineInvite(inviteId) {
 }
 
 
-// creating group 
+// creating group
 document.querySelector("#create_group_btn").addEventListener("click", () => {
     const form = document.querySelector("#create_group_form");
     form.style.display = form.style.display === "none" ? "block" : "none";
@@ -132,10 +143,10 @@ document.querySelector("#create_group_btn").addEventListener("click", () => {
 document.querySelector("#new_group").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name      = document.querySelector("#group_name").value.trim();
-    const desc      = document.querySelector("#group_desc").value.trim();
-    const invite    = document.querySelector("#invite_email").value.trim();
-    const msg       = document.querySelector("#create_group_msg");
+    const name   = document.querySelector("#group_name").value.trim();
+    const desc   = document.querySelector("#group_desc").value.trim();
+    const invite = document.querySelector("#invite_email").value.trim();
+    const msg    = document.querySelector("#create_group_msg");
 
     if (!name) {
         msg.textContent = "Group name is required.";
@@ -144,7 +155,13 @@ document.querySelector("#new_group").addEventListener("submit", async (e) => {
     }
 
     try {
-        await apiCreateGroup(name, desc, invite);
+        const result = await apiCreateGroup(name, desc, invite);
+        // FIX: check for server-side error returned in JSON body
+        if (result.message && !result.id) {
+            msg.textContent = result.message;
+            msg.style.color = "#cc0000";
+            return;
+        }
         msg.textContent = "Group created!";
         msg.style.color = "green";
         toast("Group created!", "success");
@@ -161,7 +178,7 @@ document.querySelector("#new_group").addEventListener("submit", async (e) => {
 });
 
 
-// init for this page 
+// init for this page
 async function init() {
     initSidebar();
     initSearch();

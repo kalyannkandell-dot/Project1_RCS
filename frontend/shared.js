@@ -1,57 +1,61 @@
-
-// swap for real fetch calls on integration
-
-const DUMMY_SHARED_WITH_ME = [
-    { id: "sw1", name: "semester_notes.pdf", sharedBy: "Aayush", size: "3.2 MB", ago: "1 day ago",  downloadUrl: "#" },
-    { id: "sw2", name: "event_poster.png",   sharedBy: "Albert", size: "1.8 MB", ago: "2 days ago", downloadUrl: "#" },
-    { id: "sw3", name: "budget_2025.xlsx",   sharedBy: "Aayush", size: "420 KB", ago: "4 days ago", downloadUrl: "#" },
-];
-
-const DUMMY_SHARED_BY_ME = [
-    { id: "sb1", name: "project_report.pdf",  sharedWith: "Aayush, Albert", size: "1.2 MB", ago: "2 hours ago" },
-    { id: "sb2", name: "notes_chapter3.docx", sharedWith: "Aayush",         size: "540 KB", ago: "3 days ago"  },
-];
-
-const DUMMY_LINKS = [
-    { id: "lk1", name: "campus_photo.jpg",   expiry: "20 May 2025", password: false, url: "https://hamrocloud.app/s/abc123" },
-    { id: "lk2", name: "project_report.pdf", expiry: "25 May 2025", password: true,  url: "https://hamrocloud.app/s/xyz789" },
-];
-
-let sharedWithMeStore = [...DUMMY_SHARED_WITH_ME];
-let sharedByMeStore   = [...DUMMY_SHARED_BY_ME];
-let linksStore        = [...DUMMY_LINKS];
-
-function apiFetchSharedWithMe() { return Promise.resolve([...sharedWithMeStore]); }
-function apiFetchSharedByMe()   { return Promise.resolve([...sharedByMeStore]); }
-function apiFetchLinks()        { return Promise.resolve([...linksStore]); }
-
-function apiRevokeShare(shareId) {
-    sharedByMeStore = sharedByMeStore.filter(f => f.id !== shareId);
-    return Promise.resolve({ success: true });
-    // changed upon integration
+if (!localStorage.getItem("hc_token")) {
+    window.location.href = "login.html";
 }
 
-function apiCreateLink(file, expiry, password) {
-    const newLink = {
-        id: "lk" + Date.now(),
-        name: file,
-        expiry: expiry || "No expiry",
-        password: !!password,
-        url: "https://hamrocloud.app/s/" + Math.random().toString(36).slice(2, 9)
-    };
-    linksStore.unshift(newLink);
-    return Promise.resolve(newLink);
-    // changed upon integration
+async function apiFetchSharedWithMe() {
+    // FIX: was missing Authorization header
+    const res = await fetch(`${API_BASE}/api/shared/with-me`, {
+        headers: getAuthHeaders()
+    });
+    return res.json();
 }
 
-function apiRevokeLink(linkId) {
-    linksStore = linksStore.filter(l => l.id !== linkId);
-    return Promise.resolve({ success: true });
-    // changed upon integration
+async function apiFetchSharedByMe() {
+    // FIX: was missing Authorization header
+    const res = await fetch(`${API_BASE}/api/shared/by-me`, {
+        headers: getAuthHeaders()
+    });
+    return res.json();
+}
+
+async function apiFetchLinks() {
+    // FIX: was GET /api/files/links — correct endpoint is GET /api/links
+    const res = await fetch(`${API_BASE}/api/links`, {
+        headers: getAuthHeaders()
+    });
+    return res.json();
+}
+
+async function apiRevokeShare(shareId) {
+    // FIX: was missing Authorization header
+    const res = await fetch(`${API_BASE}/api/shared/${shareId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders()
+    });
+    return res.json();
+}
+
+async function apiCreateLink(file, expiry, password) {
+    // FIX: was POST /api/files/share — correct endpoint is POST /api/links
+    const res = await fetch(`${API_BASE}/api/links`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ fileName: file, expiry: expiry || null, password: password || null })
+    });
+    return res.json();
+}
+
+async function apiRevokeLink(linkId) {
+    // FIX: was DELETE /api/files/links/:id — correct endpoint is DELETE /api/links/:id
+    const res = await fetch(`${API_BASE}/api/links/${linkId}`, {
+        method: "DELETE",
+        headers: getAuthHeaders()
+    });
+    return res.json();
 }
 
 
-// rendering share with me 
+// rendering shared with me
 async function loadSharedWithMe() {
     const container = document.querySelector("#shared_with_me_list");
     try {
@@ -70,7 +74,7 @@ async function loadSharedWithMe() {
                     <small>Shared by ${f.sharedBy} · ${f.size} · ${f.ago}</small>
                 </div>
                 <div class="file_btns">
-                    <a href="${f.downloadUrl}" class="btn" download>Download</a>
+                    <a href="${API_BASE}${f.downloadUrl}" class="btn" download>Download</a>
                 </div>
             </div>
         `).join("");
@@ -82,7 +86,7 @@ async function loadSharedWithMe() {
 }
 
 
-// rendering shared by me 
+// rendering shared by me
 async function loadSharedByMe() {
     const container = document.querySelector("#shared_by_me_list");
     try {
@@ -113,7 +117,7 @@ async function loadSharedByMe() {
 }
 
 
-// revokind share 
+// revoking share
 async function revokeShare(shareId, btnEl) {
     if (!confirm("Revoke this share?")) return;
     btnEl.textContent = "…";
@@ -131,7 +135,7 @@ async function revokeShare(shareId, btnEl) {
 }
 
 
-// render links 
+// render links
 async function loadLinks() {
     const container = document.querySelector("#links_list");
     try {
@@ -163,7 +167,7 @@ async function loadLinks() {
 }
 
 
-// copy link 
+// copy link
 function copyLink(url, btnEl) {
     navigator.clipboard.writeText(url)
         .then(() => {
@@ -176,7 +180,7 @@ function copyLink(url, btnEl) {
 }
 
 
-// revoke link 
+// revoke link
 async function revokeLink(linkId, btnEl) {
     if (!confirm("Revoke this link? Anyone using it will lose access.")) return;
     btnEl.textContent = "…";
@@ -194,7 +198,7 @@ async function revokeLink(linkId, btnEl) {
 }
 
 
-// form for new link 
+// form for new link
 document.querySelector("#new_link_btn").addEventListener("click", () => {
     const form = document.querySelector("#new_link_form");
     form.style.display = form.style.display === "none" ? "block" : "none";
@@ -204,8 +208,13 @@ document.querySelector("#link_form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn      = document.querySelector("#auth_button");
     const file     = document.querySelector("#link_file").value.trim();
-    const expiry   = document.querySelector("#link_expiry").value;
-    const password = document.querySelector("#link_pass").value;
+    const expiry   = document.querySelector("#link_expiry").value || null;
+    const password = document.querySelector("#link_pass").value || null;
+
+    if (!file) {
+        toast("Please enter a file name.");
+        return;
+    }
 
     btn.textContent = "Generating…";
     btn.disabled = true;
@@ -228,7 +237,7 @@ document.querySelector("#link_form").addEventListener("submit", async (e) => {
 document.addEventListener("click", (e) => {
     const form = document.querySelector("#new_link_form");
     const btn  = document.querySelector("#new_link_btn");
-    if (!form.contains(e.target) && !btn.contains(e.target)) {
+    if (form && !form.contains(e.target) && !btn.contains(e.target)) {
         form.style.display = "none";
     }
 });
@@ -246,8 +255,7 @@ tabs.forEach(btn => {
 });
 
 
-
-// init for this page 
+// init for this page
 async function init() {
     initSidebar();
     initSearch();
