@@ -3,7 +3,7 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const path   = require("path");   // FIX: was missing — needed for account deletion file cleanup
 const fs     = require("fs");     // FIX: was missing — needed for account deletion file cleanup
-const auth   = require("./auth.js");   // FIX: was "./auth.js" — should be "../auth.js" (routes/ subfolder)
+const auth   = require("../auth.js");   // FIX: was "./auth.js" — should be "../auth.js" (routes/ subfolder)
 const db     = require("../db.js");     // FIX: was "./db.js"   — should be "../db.js"
 
 

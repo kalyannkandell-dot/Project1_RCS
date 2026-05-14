@@ -1,0 +1,31 @@
+{
+  "users": [
+    {
+      "id": "4933f19a-2234-4bcf-b35d-72a6cd5e1031",
+      "email": "user@gmail.com",
+      "fullName": "user",
+      "passwordHash": "$2b$10$kB/fqwZOH15GO3kSL6ZjLOgD.7PJTIIqvRC4zuP9QhNrqqByLMtGq",
+      "avatarUrl": null,
+      "storageUsed": 0,
+      "storageTotal": 10737418240,
+      "createdAt": "2026-05-14T16:18:13.589Z"
+    },
+    {
+      "id": "69f8a4f1-3730-446c-b2fa-ea24806d4100",
+      "email": "kalyan.kandel777@gmail.com",
+      "fullName": "kalyan.kandel777",
+      "passwordHash": "$2b$10$3CfTiafHUSKX7MRMiZYmCO/X.9lnYsOiGyGJyr0cTYZJM7x6wc1S.",
+      "avatarUrl": null,
+      "storageUsed": 0,
+      "storageTotal": 10737418240,
+      "createdAt": "2026-05-14T16:23:01.191Z"
+    }
+  ],
+  "files": [],
+  "groups": [],
+  "members": [],
+  "invites": [],
+  "shares": [],
+  "links": [],
+  "reset_tokens": []
+}
