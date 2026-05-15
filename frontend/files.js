@@ -1,4 +1,4 @@
-// files.js
+
 
 if (!localStorage.getItem("hc_token")) {
     window.location.href = "login.html";
@@ -10,7 +10,6 @@ async function apiFetchFiles() {
 }
 
 async function apiFetchStorage() {
-    // FIX: was missing auth headers — /api/user/storage requires a token
     const res = await fetch(`${API_BASE}/api/user/storage`, {
         headers: getAuthHeaders()
     });
@@ -21,8 +20,6 @@ async function apiUploadFile(file) {
     const formData = new FormData();
     formData.append("file", file);
     const res = await fetch(`${API_BASE}/api/files/upload`, {
-        // FIX 1: endpoint was "/api/files" (GET route) — correct upload endpoint is /api/files/upload
-        // FIX 2: "Bearer"+token was missing a space — must be "Bearer " + token
         method: "POST",
         headers: getAuthHeadersNoContent(),
         body: formData
@@ -38,8 +35,6 @@ async function apiDeleteFile(id) {
     return res.json();
 }
 
-// FIX: share requires an email in the body — old version sent no body at all.
-// Now opens a prompt for the recipient's email.
 async function apiShareFile(id, email) {
     const res = await fetch(`${API_BASE}/api/files/${id}/share`, {
         method: "POST",
@@ -61,7 +56,7 @@ function classifyFile(name) {
 }
 
 
-// RENDER
+// render
 
 let allFiles = [];
 let activeFilter = "all";
@@ -121,8 +116,6 @@ async function loadFiles() {
 async function loadStorage() {
     try {
         const data = await apiFetchStorage();
-        // FIX: backend returns { used, total } in GB — old code destructured
-        // { usedGB, totalGB } which don't exist; correct field names are used/total
         const pct = Math.min((data.used / data.total) * 100, 100).toFixed(1);
         document.querySelector(".storage_numbers").textContent = `${data.used} GB / ${data.total} GB`;
         document.querySelector(".storage_fill").style.width = pct + "%";
@@ -152,7 +145,7 @@ async function uploadFile(file) {
 }
 
 
-// DELETE
+// deleat
 
 async function handleDelete(e) {
     const id = e.target.dataset.id;
@@ -169,9 +162,7 @@ async function handleDelete(e) {
 }
 
 
-// SHARE
-// FIX: old handleShare called apiShareFile with no email — backend requires one.
-// Now prompts the user for the recipient's email.
+// share
 async function handleShare(e) {
     const id   = e.target.dataset.id;
     const file = allFiles.find(f => f.id === id);
@@ -244,7 +235,7 @@ document.querySelectorAll(".filter_btn").forEach(btn => {
 });
 
 
-// search — filters rendered list; dropdown handled by utils
+// search
 
 document.querySelector("#search").addEventListener("input", (e) => {
     activeSearch = e.target.value.trim().toLowerCase();

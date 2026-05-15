@@ -3,7 +3,6 @@ if (!localStorage.getItem("hc_token")) {
 }
 
 async function apiFetchSharedWithMe() {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/shared/with-me`, {
         headers: getAuthHeaders()
     });
@@ -11,7 +10,6 @@ async function apiFetchSharedWithMe() {
 }
 
 async function apiFetchSharedByMe() {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/shared/by-me`, {
         headers: getAuthHeaders()
     });
@@ -19,7 +17,6 @@ async function apiFetchSharedByMe() {
 }
 
 async function apiFetchLinks() {
-    // FIX: was GET /api/files/links — correct endpoint is GET /api/links
     const res = await fetch(`${API_BASE}/api/links`, {
         headers: getAuthHeaders()
     });
@@ -27,7 +24,6 @@ async function apiFetchLinks() {
 }
 
 async function apiRevokeShare(shareId) {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/shared/${shareId}`, {
         method: "DELETE",
         headers: getAuthHeaders()
@@ -36,7 +32,6 @@ async function apiRevokeShare(shareId) {
 }
 
 async function apiCreateLink(file, expiry, password) {
-    // FIX: was POST /api/files/share — correct endpoint is POST /api/links
     const res = await fetch(`${API_BASE}/api/links`, {
         method: "POST",
         headers: getAuthHeaders(),
@@ -46,7 +41,6 @@ async function apiCreateLink(file, expiry, password) {
 }
 
 async function apiRevokeLink(linkId) {
-    // FIX: was DELETE /api/files/links/:id — correct endpoint is DELETE /api/links/:id
     const res = await fetch(`${API_BASE}/api/links/${linkId}`, {
         method: "DELETE",
         headers: getAuthHeaders()

@@ -5,7 +5,6 @@ if (!localStorage.getItem("hc_token")) {
 const GROUP_ID = new URLSearchParams(window.location.search).get("id");
 
 async function apiFetchGroup() {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/groups/${GROUP_ID}`, {
         headers: getAuthHeaders()
     });
@@ -13,7 +12,6 @@ async function apiFetchGroup() {
 }
 
 async function apiFetchMembers() {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/groups/${GROUP_ID}/members`, {
         headers: getAuthHeaders()
     });
@@ -21,7 +19,6 @@ async function apiFetchMembers() {
 }
 
 async function apiFetchGroupFiles() {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/groups/${GROUP_ID}/files`, {
         headers: getAuthHeaders()
     });
@@ -29,7 +26,6 @@ async function apiFetchGroupFiles() {
 }
 
 async function apiInviteMember(email) {
-    // FIX: was POST /api/groups/:id/members — correct endpoint is POST /api/groups/:id/invite
     const res = await fetch(`${API_BASE}/api/groups/${GROUP_ID}/invite`, {
         method: "POST",
         headers: getAuthHeaders(),
@@ -39,7 +35,6 @@ async function apiInviteMember(email) {
 }
 
 async function apiRemoveMember(memberId) {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/groups/${GROUP_ID}/members/${memberId}`, {
         method: "DELETE",
         headers: getAuthHeaders()
@@ -50,7 +45,6 @@ async function apiRemoveMember(memberId) {
 async function apiUploadGroupFile(file) {
     const formData = new FormData();
     formData.append("file", file);
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/groups/${GROUP_ID}/files`, {
         method: "POST",
         headers: { "Authorization": "Bearer " + localStorage.getItem("hc_token") },
@@ -60,7 +54,6 @@ async function apiUploadGroupFile(file) {
 }
 
 async function apiDeleteGroupFile(fileId) {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/groups/${GROUP_ID}/files/${fileId}`, {
         method: "DELETE",
         headers: getAuthHeaders()
@@ -69,7 +62,6 @@ async function apiDeleteGroupFile(fileId) {
 }
 
 async function apiLeaveGroup() {
-    // FIX: was missing Authorization header
     const res = await fetch(`${API_BASE}/api/groups/${GROUP_ID}/members/me`, {
         method: "DELETE",
         headers: getAuthHeaders()

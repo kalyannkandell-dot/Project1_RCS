@@ -1,4 +1,4 @@
-// dashboard.js
+
 
 if (!localStorage.getItem("hc_token")) {
     window.location.href = "login.html";
@@ -24,7 +24,6 @@ const API = {
         return res.json();
     },
     async getGroups() {
-        // FIX: was missing Authorization header — groups endpoint requires auth
         const res = await fetch(`${API_BASE}/api/groups`, {
             headers: getAuthHeaders()
         });
@@ -117,7 +116,6 @@ async function loadGroups() {
     }
 }
 
-// FIX: placeholder — wired to shared page; a proper share modal can be added later
 function shareFile(fileId, fileName) {
     window.location.href = `shared.html?file=${fileId}`;
 }

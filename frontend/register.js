@@ -5,7 +5,7 @@ async function registerUser(email, password) {
         body:    JSON.stringify({ email, password })
     });
 
-    // FIX: was calling res.json() twice — body stream can only be read once
+    
     const data = await res.json();
     if (!res.ok) {
         throw new Error(data.message || 'Registration failed.');
@@ -41,7 +41,7 @@ document.querySelector('#register_form').addEventListener('submit', async (e) =>
     try {
         await registerUser(email, password);
         toast('Account created! Redirecting…', 'success');
-        setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+        setTimeout(() => { window.location.href = 'login.html'; }, 10);
     } catch (err) {
         toast(err.message || 'Registration failed.');
         btn.textContent = 'Submit';

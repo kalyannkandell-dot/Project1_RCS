@@ -17,7 +17,6 @@ async function apiGetStorage() {
 }
 
 async function apiUpdateProfile(fullName, email) {
-    // FIX: was PATCH /api/user/me — correct endpoint is /api/user/profile
     const res = await fetch(`${API_BASE}/api/user/profile`, {
         method: "PATCH",
         headers: getAuthHeaders(),
@@ -26,8 +25,6 @@ async function apiUpdateProfile(fullName, email) {
     return res.json();
 }
 
-// FIX: backend has no avatar upload endpoint — keeping function but showing a warning
-// If you add POST /api/user/avatar to the backend in the future, this will work as-is
 async function apiUpdateAvatar(file) {
     const formData = new FormData();
     formData.append("avatar", file);
@@ -40,7 +37,6 @@ async function apiUpdateAvatar(file) {
 }
 
 async function apiChangePassword(currentPass, newPass) {
-    // FIX: was PATCH /api/user/password — correct endpoint is POST /api/user/change-password
     const res = await fetch(`${API_BASE}/api/user/change-password`, {
         method: "POST",
         headers: getAuthHeaders(),
@@ -50,7 +46,6 @@ async function apiChangePassword(currentPass, newPass) {
 }
 
 async function apiDeleteAccount() {
-    // FIX: was DELETE /api/user/me — correct endpoint is DELETE /api/user/account
     const res = await fetch(`${API_BASE}/api/user/account`, {
         method: "DELETE",
         headers: getAuthHeaders()
@@ -61,8 +56,6 @@ async function apiDeleteAccount() {
 
 async function loadProfile() {
     try {
-        // FIX: backend /api/user/me does NOT return storageUsed/storageTotal
-        // those come from a separate /api/user/storage call
         const [data, storage] = await Promise.all([apiGetProfile(), apiGetStorage()]);
 
         document.querySelector("#profile_name").textContent = data.fullName;

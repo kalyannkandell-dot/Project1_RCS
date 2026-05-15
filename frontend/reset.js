@@ -9,7 +9,6 @@ if (!token) {
 }
 
 async function resetPassword(token, password) {
-    // FIX: was missing API_BASE — would only work if frontend served from same origin as backend
     const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },

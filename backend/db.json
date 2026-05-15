@@ -19,12 +19,123 @@
       "storageUsed": 0,
       "storageTotal": 10737418240,
       "createdAt": "2026-05-14T16:23:01.191Z"
+    },
+    {
+      "id": "c7200dfd-0a6f-426d-aee3-3996cb84240a",
+      "email": "lamo@gmail.com",
+      "fullName": "lamo",
+      "passwordHash": "$2b$10$3zMMY1CNH6zBQpOuGcS/Fey7aIWTzt4ApOuSOYL1qgJfTEGdB3f2q",
+      "avatarUrl": null,
+      "storageUsed": 0,
+      "storageTotal": 10737418240,
+      "createdAt": "2026-05-14T16:45:55.762Z"
+    },
+    {
+      "id": "d6e5e70e-70a1-4d4d-98d6-42b691773019",
+      "email": "kalyan@gmail.com",
+      "fullName": "don",
+      "passwordHash": "$2b$10$V7YrA41ng6fZgt1tTeuVa.4qAcbNFLV0pjrFhcIn/v0e5dp3QEgDy",
+      "avatarUrl": null,
+      "storageUsed": 0,
+      "storageTotal": 10737418240,
+      "createdAt": "2026-05-14T16:49:45.084Z"
+    },
+    {
+      "id": "60cec486-1380-4cb8-82c9-4fa72ed6e4df",
+      "email": "email@gamil.com",
+      "fullName": "email",
+      "passwordHash": "$2b$10$WUFskm40NfIQ.t6kJQUpDe/uqbM..CkCmiYbnhum35WegExjTZBGu",
+      "avatarUrl": null,
+      "storageUsed": 0,
+      "storageTotal": 10737418240,
+      "createdAt": "2026-05-15T00:40:41.713Z"
     }
   ],
-  "files": [],
-  "groups": [],
-  "members": [],
-  "invites": [],
+  "files": [
+    {
+      "id": "1ca3f7e7-d9a0-484d-bd93-31aa0e909b42",
+      "ownerId": "d6e5e70e-70a1-4d4d-98d6-42b691773019",
+      "name": "storage.png",
+      "storedName": "aa4a2041-b962-4315-8216-d47262f22b0b.png",
+      "sizeBytes": 768684,
+      "mimeType": "image/png",
+      "uploadedAt": "2026-05-14T17:04:58.608Z",
+      "groupId": null
+    },
+    {
+      "id": "63a20466-158e-4156-b659-f5f77ea6ae07",
+      "ownerId": "69f8a4f1-3730-446c-b2fa-ea24806d4100",
+      "name": "settings.png",
+      "storedName": "cf426b36-d155-4bb9-8150-f4acd3762737.png",
+      "sizeBytes": 737284,
+      "mimeType": "image/png",
+      "uploadedAt": "2026-05-15T01:02:49.714Z",
+      "groupId": null
+    },
+    {
+      "id": "171ba238-0492-491e-932c-0ed23f907c26",
+      "ownerId": "69f8a4f1-3730-446c-b2fa-ea24806d4100",
+      "name": "Document.docx",
+      "storedName": "f07c0961-dcc3-43f4-b13b-fd4fce4cdb6a.docx",
+      "sizeBytes": 286751,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "uploadedAt": "2026-05-15T01:03:13.004Z",
+      "groupId": null
+    }
+  ],
+  "groups": [
+    {
+      "id": "bdc6db13-6067-40f7-bf6d-8ab78d53fec7",
+      "name": "cs project",
+      "initials": "CP",
+      "description": "hewllo world",
+      "createdBy": "69f8a4f1-3730-446c-b2fa-ea24806d4100",
+      "createdAt": "2026-05-14T16:47:02.279Z"
+    },
+    {
+      "id": "cec842b7-8fd2-4ed4-a764-325a0a364b07",
+      "name": "cs project",
+      "initials": "CP",
+      "description": "fafaf",
+      "createdBy": "d6e5e70e-70a1-4d4d-98d6-42b691773019",
+      "createdAt": "2026-05-14T16:50:38.197Z"
+    }
+  ],
+  "members": [
+    {
+      "groupId": "bdc6db13-6067-40f7-bf6d-8ab78d53fec7",
+      "userId": "69f8a4f1-3730-446c-b2fa-ea24806d4100",
+      "role": "Admin"
+    },
+    {
+      "groupId": "cec842b7-8fd2-4ed4-a764-325a0a364b07",
+      "userId": "d6e5e70e-70a1-4d4d-98d6-42b691773019",
+      "role": "Admin"
+    },
+    {
+      "groupId": "cec842b7-8fd2-4ed4-a764-325a0a364b07",
+      "userId": "69f8a4f1-3730-446c-b2fa-ea24806d4100",
+      "role": "Member"
+    }
+  ],
+  "invites": [
+    {
+      "id": "d2e97ecf-e130-44e5-b2e2-552f92108db1",
+      "groupId": "bdc6db13-6067-40f7-bf6d-8ab78d53fec7",
+      "invitedByUserId": "69f8a4f1-3730-446c-b2fa-ea24806d4100",
+      "invitedUserId": "4933f19a-2234-4bcf-b35d-72a6cd5e1031",
+      "status": "pending",
+      "createdAt": "2026-05-14T16:47:02.280Z"
+    },
+    {
+      "id": "88bd74b7-6240-48e3-9cd4-a8df05ea5b1a",
+      "groupId": "cec842b7-8fd2-4ed4-a764-325a0a364b07",
+      "invitedByUserId": "d6e5e70e-70a1-4d4d-98d6-42b691773019",
+      "invitedUserId": "69f8a4f1-3730-446c-b2fa-ea24806d4100",
+      "status": "accepted",
+      "createdAt": "2026-05-14T16:50:38.198Z"
+    }
+  ],
   "shares": [],
   "links": [],
   "reset_tokens": []

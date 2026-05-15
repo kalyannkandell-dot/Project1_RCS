@@ -1,6 +1,4 @@
-// bonds.js — Groups & Invites page
 
-// FIX: all API calls were missing Authorization headers — added getAuthHeaders() throughout
 
 async function apiFetchGroups() {
     const res = await fetch(`${API_BASE}/api/groups`, {
@@ -10,7 +8,6 @@ async function apiFetchGroups() {
 }
 
 async function apiFetchInvites() {
-    // FIX: wrong endpoint was "/api/groups/invites" — correct is "/api/groups/invites/me"
     const res = await fetch(`${API_BASE}/api/groups/invites/me`, {
         headers: getAuthHeaders()
     });
@@ -21,7 +18,6 @@ async function apiCreateGroup(name, desc, inviteEmail) {
     const res = await fetch(`${API_BASE}/api/groups`, {
         method: "POST",
         headers: getAuthHeaders(),
-        // FIX: backend expects "description" not "desc"
         body: JSON.stringify({ name, description: desc, inviteEmail })
     });
     return res.json();
@@ -36,8 +32,6 @@ async function apiAcceptInvite(inviteId) {
 }
 
 async function apiDeclineInvite(inviteId) {
-    // FIX: was sending DELETE to wrong endpoint "/api/groups/invites/:id"
-    // Correct endpoint is POST /api/groups/invites/:id/decline
     const res = await fetch(`${API_BASE}/api/groups/invites/${inviteId}/decline`, {
         method: "POST",
         headers: getAuthHeaders()
@@ -156,7 +150,6 @@ document.querySelector("#new_group").addEventListener("submit", async (e) => {
 
     try {
         const result = await apiCreateGroup(name, desc, invite);
-        // FIX: check for server-side error returned in JSON body
         if (result.message && !result.id) {
             msg.textContent = result.message;
             msg.style.color = "#cc0000";

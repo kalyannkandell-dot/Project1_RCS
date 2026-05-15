@@ -1,7 +1,7 @@
 const API_BASE = "http://127.0.0.1:3000";
 
 
-// ========== HELPERS ==========
+// helpers
 function formatSize(bytes) {
     if (bytes < 1024) return bytes + " B";
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
@@ -33,8 +33,7 @@ function getFileIcon(name) {
 }
 
 
-// ========== AUTH HEADERS ==========
-// FIX: was reading "token" in one place and "hc_token" in another — unified to "hc_token"
+// auth headers
 function getAuthHeaders() {
     return {
         "Content-Type": "application/json",
@@ -42,16 +41,15 @@ function getAuthHeaders() {
     };
 }
 
-// Use this for FormData uploads — no Content-Type, browser sets it with the correct boundary
+// Use this for FormData uploads 
 function getAuthHeadersNoContent() {
-    // FIX: was reading "token" instead of "hc_token"
     return {
         "Authorization": "Bearer " + localStorage.getItem("hc_token")
     };
 }
 
 
-// ========== TOAST ==========
+// TOAST
 function toast(msg, type = 'error') {
     let el = document.getElementById('hc_toast');
     if (!el) {
@@ -75,7 +73,7 @@ function toast(msg, type = 'error') {
 }
 
 
-// ========== SIDEBAR ==========
+// sidebar
 function initSidebar() {
     document.querySelector("#hamburger").addEventListener("click", () => {
         document.querySelector("#sidebar").classList.toggle("active");
@@ -91,7 +89,7 @@ function initSidebar() {
 }
 
 
-// ========== SEARCH ==========
+// search
 function initSearch() {
     const input = document.querySelector("#search");
     const dropdown = document.querySelector("#search_results");
@@ -146,7 +144,7 @@ function initSearch() {
 }
 
 
-// ========== PROFILE AVATAR ==========
+// profilavater
 async function loadUserHeader() {
     try {
         const res = await fetch(`${API_BASE}/api/user/me`, {
