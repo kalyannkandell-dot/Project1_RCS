@@ -1,6 +1,3 @@
-
-
-
 function toast(msg, type = 'error') {
     let el = document.getElementById('hc_toast');
     if (!el) {
@@ -22,14 +19,15 @@ function toast(msg, type = 'error') {
     el._t = setTimeout(() => { el.style.opacity = '0'; }, 2800);
 }
 
-
-
 async function requestRecovery(email) {
-    const res = await fetch(`${API_BASE}/api/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
-    if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Request failed."); }
+    const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Request failed."); }
     return await res.json();
 }
-
 
 document.querySelector('#forgot_submit').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -42,6 +40,7 @@ document.querySelector('#forgot_submit').addEventListener('submit', async (e) =>
         return;
     }
 
+    const originalText = btn.textContent;
     btn.textContent = 'Sending…';
     btn.disabled = true;
 
@@ -54,7 +53,7 @@ document.querySelector('#forgot_submit').addEventListener('submit', async (e) =>
         `;
     } catch (err) {
         toast(err.message || 'Something went wrong.');
-        btn.textContent = 'submit';
+        btn.textContent = originalText;
         btn.disabled = false;
     }
 });

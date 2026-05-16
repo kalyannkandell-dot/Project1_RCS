@@ -1,8 +1,5 @@
+const API_BASE = "http://localhost:3000"; 
 
-const API_BASE = ""; 
-
-
-// helper functions
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function formatSize(bytes) {
@@ -12,10 +9,9 @@ function formatSize(bytes) {
     return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
 }
 
-function timeAgo(dateString) {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diff = Math.floor((now - date) / 1000);
+function timeAgo(timestamp) {
+    const now = Date.now();
+    const diff = Math.floor((now - timestamp * 1000) / 1000);
     if (diff < 60) return "just now";
     if (diff < 3600) return Math.floor(diff / 60) + " min ago";
     if (diff < 86400) return Math.floor(diff / 3600) + " hours ago";
@@ -35,8 +31,6 @@ function getFileIcon(name) {
     return "📁";
 }
 
-
-// toast
 function toast(msg, type = 'error') {
     let el = document.getElementById('hc_toast');
     if (!el) {
@@ -59,13 +53,10 @@ function toast(msg, type = 'error') {
     el._t = setTimeout(() => { el.style.opacity = '0'; }, 2800);
 }
 
-
-// sidebar
 function initSidebar() {
     document.querySelector("#hamburger").addEventListener("click", () => {
         document.querySelector("#sidebar").classList.toggle("active");
     });
-
     document.addEventListener("click", (e) => {
         const sidebar = document.querySelector("#sidebar");
         const hamburger = document.querySelector("#hamburger");
@@ -75,43 +66,26 @@ function initSidebar() {
     });
 }
 
-
-// search button 
-
 function initSearch() {
     const input = document.querySelector("#search");
     const dropdown = document.querySelector("#search_results");
     if (!input || !dropdown) return;
 
-    // fetch all files once for global search
     let allFilesCache = [];
-    fetch(`${API_BASE}/api/files`)
+    fetch(`${API_BASE}/api/files/recent?limit=50`, { headers: getAuthHeaders() })
         .then(r => r.json())
         .then(files => { allFilesCache = files; })
         .catch(() => {
-            // backend not ready yet — use dummy fallback
-            allFilesCache = [
-                { name: "project_report.pdf" },
-                { name: "database_backup.sql" },
-                { name: "campus_photo.jpg" },
-                { name: "notes_chapter3.docx" },
-                { name: "marks_sheet.xlsx" },
-                { name: "id_card_scan.png" },
-            ];
+            allFilesCache = [];
         });
 
     input.addEventListener("input", (e) => {
         const query = e.target.value.trim().toLowerCase();
-
         if (query.length < 1) {
             dropdown.style.display = "none";
             return;
         }
-
-        const matches = allFilesCache.filter(f =>
-            f.name.toLowerCase().includes(query)
-        );
-
+        const matches = allFilesCache.filter(f => f.name.toLowerCase().includes(query));
         dropdown.innerHTML = matches.length
             ? matches.map(f => `
                 <div class="search_item" onclick="window.location.href='files.html'">
@@ -119,7 +93,6 @@ function initSearch() {
                     <span>${f.name}</span>
                 </div>`).join("")
             : `<div class="search_item">No results found</div>`;
-
         dropdown.style.display = "block";
     });
 
@@ -130,14 +103,12 @@ function initSearch() {
     });
 }
 
-
-// profile avater
 async function loadUserHeader() {
     try {
-        const res = await fetch(`${API_BASE}/api/user/me`);
+        const res = await fetch(`${API_BASE}/api/user/me`, { headers: getAuthHeaders() });
         const data = await res.json();
-        if (data.avatarUrl) {
-            document.querySelector("#avatar").src = data.avatarUrl;
+        if (data.avatarPath) {
+            document.querySelector("#avatar").src = `${API_BASE}/${data.avatarPath}`;
         }
     } catch (err) {
         document.querySelector("#avatar").src = "images/profilepic.png";

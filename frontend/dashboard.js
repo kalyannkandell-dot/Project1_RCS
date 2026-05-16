@@ -1,4 +1,3 @@
-
 if (!localStorage.getItem("hc_token")) {
     window.location.href = "login.html";
 }
@@ -22,8 +21,10 @@ async function loadStorage() {
     try {
         const data = await API.getStorage();
         const percent = ((data.used / data.total) * 100).toFixed(1);
+        const usedGB  = (data.used  / 1073741824).toFixed(2);
+        const totalGB = (data.total / 1073741824).toFixed(2);
         document.querySelector(".storage_fill").style.width = percent + "%";
-        document.querySelector(".storage_numbers").textContent = `${data.used} GB / ${data.total} GB`;
+        document.querySelector(".storage_numbers").textContent = `${usedGB} GB / ${totalGB} GB`;
     } catch (err) {
         console.error("Storage fetch failed:", err);
         document.querySelector(".storage_numbers").textContent = "Could not load";
@@ -37,8 +38,7 @@ async function loadStats() {
         const data = await API.getStats();
         document.querySelector("#stat_files").textContent  = data.totalFiles   ?? "--";
         document.querySelector("#stat_shared").textContent = data.sharedWithMe ?? "--";
-        document.querySelector("#stat_groups").textContent = data.groups        ?? "--";
-        document.querySelector("#stat_links").textContent  = data.activeLinks   ?? "--";
+        document.querySelector("#stat_groups").textContent = data.totalGroups  ?? "--";
     } catch (err) {
         console.error("Stats fetch failed:", err);
         toast("Could not load stats.");
@@ -62,10 +62,10 @@ async function loadRecentFiles() {
                 <span class="file_icon">${getFileIcon(file.name)}</span>
                 <div class="file_meta">
                     <strong>${file.name}</strong>
-                    <small>${formatSize(file.size)} · ${timeAgo(file.uploadedAt)}</small>
+                    <small>${formatSize(file.size)} · ${timeAgo(file.createdAt)}</small>
                 </div>
                 <div class="file_btns">
-                    <a href="#" class="btn">Download</a>
+                    <a href="${API_BASE}/api/files/${file.id}/download" class="btn">Download</a>
                     <button class="btn btn_share" data-id="${file.id}" data-name="${file.name}">Share</button>
                 </div>
             </div>
@@ -93,15 +93,18 @@ async function loadGroups() {
             return;
         }
 
-        container.innerHTML = groups.map(group => `
-            <a href="group.html?id=${group.id}" class="dash_card group_card floting_item">
-                <div class="group_avatar">${group.initials}</div>
-                <div class="file_meta">
-                    <strong>${group.name}</strong>
-                    <small>${group.memberCount} members · ${group.fileCount} files</small>
-                </div>
-            </a>
-        `).join("");
+        container.innerHTML = groups.map(group => {
+            const initials = group.name.slice(0, 2).toUpperCase();
+            return `
+                <a href="group.html?id=${group.id}" class="dash_card group_card floting_item">
+                    <div class="group_avatar">${initials}</div>
+                    <div class="file_meta">
+                        <strong>${group.name}</strong>
+                        <small>${group.memberCount ?? "—"} members · ${group.fileCount ?? "—"} files</small>
+                    </div>
+                </a>
+            `;
+        }).join("");
 
     } catch (err) {
         console.error("Groups fetch failed:", err);
@@ -156,12 +159,15 @@ document.querySelector("#share_to_group").addEventListener("click", async () => 
             return;
         }
 
-        container.innerHTML = groups.map(g => `
-            <div class="dash_card group_card floting_item share_group_item" data-group-id="${g.id}" data-group-name="${g.name}">
-                <div class="group_avatar">${g.initials}</div>
-                <div class="file_meta"><strong>${g.name}</strong></div>
-            </div>
-        `).join("");
+        container.innerHTML = groups.map(g => {
+            const initials = g.name.slice(0, 2).toUpperCase();
+            return `
+                <div class="dash_card group_card floting_item share_group_item" data-group-id="${g.id}" data-group-name="${g.name}">
+                    <div class="group_avatar">${initials}</div>
+                    <div class="file_meta"><strong>${g.name}</strong></div>
+                </div>
+            `;
+        }).join("");
 
         container.querySelectorAll(".share_group_item").forEach(card => {
             card.addEventListener("click", async () => {

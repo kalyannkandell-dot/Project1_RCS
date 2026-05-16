@@ -1,17 +1,5 @@
-// line 1 to 11 and line 47 are supposed to be dummys remove them and then activate 36 to 46
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-const API = {
-    async register(email, password) {
-        await delay(500);
-        // showing email is taken
-        if (email === 'taken@gmail.com') throw new Error('Email already registered.');
-        return { success: true };
-    }
-};
-
 function toast(msg, type = 'error') {
-    let el = document.getElementById('hc_toast'); 
+    let el = document.getElementById('hc_toast');
     if (!el) {
         el = document.createElement('div');
         el.id = 'hc_toast';
@@ -31,22 +19,23 @@ function toast(msg, type = 'error') {
     el._t = setTimeout(() => { el.style.opacity = '0'; }, 2800);
 }
 
-
 async function registerUser(email, password) {
-    const res = await fetch(`${API_BASE}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
-    if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Registration failed."); }
+    const res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Registration failed."); }
     return await res.json();
 }
 
-
-// taking input and validating it 
 document.querySelector('#register_form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const email       = document.querySelector('#email').value.trim();
-    const password    = document.querySelector('#password').value;
+    const email        = document.querySelector('#email').value.trim();
+    const password     = document.querySelector('#password').value;
     const passwordConf = document.querySelector('#password_conf').value;
-    const btn         = document.querySelector('#auth_button');
+    const btn          = document.querySelector('#auth_button');
 
     if (!email || !password || !passwordConf) {
         toast('Please fill in all fields.');
@@ -61,6 +50,7 @@ document.querySelector('#register_form').addEventListener('submit', async (e) =>
         return;
     }
 
+    const originalText = btn.textContent;
     btn.textContent = 'Registering…';
     btn.disabled = true;
 
@@ -70,7 +60,7 @@ document.querySelector('#register_form').addEventListener('submit', async (e) =>
         setTimeout(() => { window.location.href = 'login.html'; }, 1200);
     } catch (err) {
         toast(err.message || 'Registration failed.');
-        btn.textContent = 'Submit';
+        btn.textContent = originalText;
         btn.disabled = false;
     }
 });

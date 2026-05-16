@@ -1,6 +1,7 @@
 if (!localStorage.getItem("hc_token")) {
     window.location.href = "login.html";
 }
+
 function apiFetchSharedWithMe() {
     return fetch(`${API_BASE}/api/shared/with-me`, { headers: getAuthHeaders() }).then(r => r.json());
 }
@@ -11,11 +12,11 @@ function apiRevokeShare(shareId) {
     return fetch(`${API_BASE}/api/shared/${shareId}`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
 
-// ========== RENDER SHARED WITH ME ==========
 async function loadSharedWithMe() {
     const container = document.querySelector("#shared_with_me_list");
     try {
-        const files = await apiFetchSharedWithMe();
+        const data = await apiFetchSharedWithMe();
+        const files = [...(data.direct || []), ...(data.viaGroups || [])];
 
         if (!files.length) {
             container.innerHTML = "<p>No files shared with you yet.</p>";
@@ -27,10 +28,10 @@ async function loadSharedWithMe() {
                 <span class="file_icon">${getFileIcon(f.name)}</span>
                 <div class="file_meta">
                     <strong>${f.name}</strong>
-                    <small>Shared by ${f.sharedBy} · ${f.size} · ${f.ago}</small>
+                    <small>Shared by ${f.sharedByEmail} · ${formatSize(f.size)} · ${timeAgo(f.createdAt)}</small>
                 </div>
                 <div class="file_btns">
-                    <a href="${f.downloadUrl}" class="btn" download>Download</a>
+                    <a href="${API_BASE}/api/files/${f.fileId}/download" class="btn" download>Download</a>
                 </div>
             </div>
         `).join("");
@@ -41,8 +42,6 @@ async function loadSharedWithMe() {
     }
 }
 
-
-// ========== RENDER SHARED BY ME ==========
 async function loadSharedByMe() {
     const container = document.querySelector("#shared_by_me_list");
     try {
@@ -58,10 +57,10 @@ async function loadSharedByMe() {
                 <span class="file_icon">${getFileIcon(f.name)}</span>
                 <div class="file_meta">
                     <strong>${f.name}</strong>
-                    <small>Shared with ${f.sharedWith} · ${f.size} · ${f.ago}</small>
+                    <small>Shared with ${f.sharedWithEmail || f.sharedWithGroupName} · ${formatSize(f.size)} · ${timeAgo(f.createdAt)}</small>
                 </div>
                 <div class="file_btns">
-                    <button class="btn btn_danger" onclick="revokeShare('${f.id}', this)">Revoke</button>
+                    <button class="btn btn_danger" onclick="revokeShare('${f.shareId}', this)">Revoke</button>
                 </div>
             </div>
         `).join("");
@@ -72,8 +71,6 @@ async function loadSharedByMe() {
     }
 }
 
-
-// ========== REVOKE SHARE ==========
 async function revokeShare(shareId, btnEl) {
     if (!confirm("Revoke this share?")) return;
     btnEl.textContent = "…";
@@ -90,8 +87,6 @@ async function revokeShare(shareId, btnEl) {
     }
 }
 
-
-// ========== TABS ==========
 const tabs = document.querySelectorAll(".tab_btn");
 tabs.forEach(btn => {
     btn.addEventListener("click", () => {
@@ -102,34 +97,24 @@ tabs.forEach(btn => {
     });
 });
 
-
-// ========== SEARCH — scoped to visible file rows only ==========
 document.querySelector("#search").addEventListener("input", (e) => {
     const query = e.target.value.trim().toLowerCase();
     const dropdown = document.querySelector("#search_results");
-
     if (query.length < 1) {
         dropdown.style.display = "none";
         return;
     }
-
     const matches = [];
     document.querySelectorAll(".file_row").forEach(row => {
-        // only search visible rows (active tab)
         if (row.offsetParent === null) return;
         const nameEl = row.querySelector("strong");
         if (nameEl && nameEl.textContent.toLowerCase().includes(query)) {
-            matches.push({
-                name: nameEl.textContent,
-                icon: row.querySelector(".file_icon")?.textContent || "📁"
-            });
+            matches.push({ name: nameEl.textContent, icon: row.querySelector(".file_icon")?.textContent || "📁" });
         }
     });
-
     dropdown.innerHTML = matches.length
         ? matches.map(f => `<div class="search_item"><span>${f.icon}</span><span>${f.name}</span></div>`).join("")
         : `<div class="search_item">No results found</div>`;
-
     dropdown.style.display = "block";
 });
 
@@ -139,8 +124,6 @@ document.addEventListener("click", (e) => {
     }
 });
 
-
-// ========== INIT ==========
 async function init() {
     initSidebar();
     await Promise.all([

@@ -2,6 +2,13 @@ if (!localStorage.getItem("hc_token")) {
     window.location.href = "login.html";
 }
 
+const params  = new URLSearchParams(window.location.search);
+const groupId = params.get("id");
+
+if (!groupId) {
+    window.location.href = "bonds.html";
+}
+
 function apiFetchGroup() {
     return fetch(`${API_BASE}/api/groups/${groupId}`, { headers: getAuthHeaders() }).then(r => r.json());
 }
@@ -29,15 +36,35 @@ function apiLeaveGroup() {
     return fetch(`${API_BASE}/api/groups/${groupId}/members/me`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
 
+// get current user id from token
+function getCurrentUserId() {
+    try {
+        const token   = localStorage.getItem("hc_token");
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.id;
+    } catch {
+        return null;
+    }
+}
+
 
 // load group info
 async function loadGroupInfo() {
     try {
-        const group = await apiFetchGroup();
-        document.querySelector("#group_initials").textContent = group.initials;
-        document.querySelector("#group_name").textContent = group.name;
+        const group    = await apiFetchGroup();
+        const initials = group.name.slice(0, 2).toUpperCase();
+
+        document.querySelector("#group_initials").textContent = initials;
+        document.querySelector("#group_name").textContent     = group.name;
+
+        const currentUserId  = getCurrentUserId();
+        const createdByMe    = group.createdBy === currentUserId;
+        const memberCount    = group.memberCount ?? "—";
+        const fileCount      = group.fileCount   ?? "—";
+
         document.querySelector("#group_meta").textContent =
-            `${group.memberCount} members · ${group.fileCount} files · ${group.createdByMe ? "Created by you" : ""}`;
+            `${memberCount} members · ${fileCount} files${createdByMe ? " · Created by you" : ""}`;
+
         document.title = `Hamro Cloud - ${group.name}`;
     } catch (err) {
         console.error("Failed to load group:", err);
@@ -48,23 +75,35 @@ async function loadGroupInfo() {
 
 // load members
 async function loadMembers() {
-    const container = document.querySelector("#members_list");
+    const container     = document.querySelector("#members_list");
+    const currentUserId = getCurrentUserId();
+
     try {
         const members = await apiFetchMembers();
 
-        container.innerHTML = members.map(m => `
-            <div class="dash_card file_row floting_item">
-                <div class="group_avatar">${m.name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase()}</div>
-                <div class="file_meta">
-                    <strong>${m.name}</strong>
-                    <small>${m.email} · ${m.role}</small>
+        if (members.length === 0) {
+            container.innerHTML = "<p>No members found.</p>";
+            return;
+        }
+
+        container.innerHTML = members.map(m => {
+            const displayName = m.fullName || m.email;
+            const initials    = displayName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+            const isMe        = m.id === currentUserId;
+            return `
+                <div class="dash_card file_row floting_item">
+                    <div class="group_avatar">${initials}</div>
+                    <div class="file_meta">
+                        <strong>${displayName}</strong>
+                        <small>${m.email} · ${m.role}</small>
+                    </div>
+                    ${isMe
+                        ? `<span class="group_badge">You</span>`
+                        : `<button class="btn btn_danger" onclick="removeMember('${m.id}')">Remove</button>`
+                    }
                 </div>
-                ${m.isMe
-                    ? `<span class="group_badge">You</span>`
-                    : `<button class="btn btn_danger" onclick="removeMember('${m.id}')">Remove</button>`
-                }
-            </div>
-        `).join("");
+            `;
+        }).join("");
 
     } catch (err) {
         console.error("Failed to load members:", err);
@@ -82,7 +121,7 @@ async function removeMember(memberId) {
         loadMembers();
     } catch (err) {
         console.error("Remove failed:", err);
-        toast("Could not remove member.");
+        toast(err.error || "Could not remove member.");
     }
 }
 
@@ -98,19 +137,22 @@ async function loadGroupFiles() {
             return;
         }
 
-        container.innerHTML = files.map(f => `
-            <div class="dash_card file_row floting_item">
-                <span class="file_icon">${getFileIcon(f.name)}</span>
-                <div class="file_meta">
-                    <strong>${f.name}</strong>
-                    <small>${f.size} · Uploaded by ${f.uploadedBy} · ${f.uploaded}</small>
+        container.innerHTML = files.map(f => {
+            const uploadedBy = f.addedByName || f.addedByEmail;
+            return `
+                <div class="dash_card file_row floting_item">
+                    <span class="file_icon">${getFileIcon(f.name)}</span>
+                    <div class="file_meta">
+                        <strong>${f.name}</strong>
+                        <small>${formatSize(f.size)} · Uploaded by ${uploadedBy} · ${timeAgo(f.addedAt)}</small>
+                    </div>
+                    <div class="file_btns">
+                        <a href="${API_BASE}/api/files/${f.id}/download" class="btn" download="${f.name}">Download</a>
+                        <button class="btn btn_danger" onclick="deleteGroupFile('${f.id}')">Delete</button>
+                    </div>
                 </div>
-                <div class="file_btns">
-                    <a href="#" class="btn" download="${f.name}">Download</a>
-                    <button class="btn btn_danger" onclick="deleteGroupFile('${f.id}')">Delete</button>
-                </div>
-            </div>
-        `).join("");
+            `;
+        }).join("");
 
     } catch (err) {
         console.error("Failed to load group files:", err);
@@ -128,7 +170,7 @@ async function deleteGroupFile(fileId) {
         loadGroupFiles();
     } catch (err) {
         console.error("Delete failed:", err);
-        toast("Could not delete file.");
+        toast(err.error || "Could not delete file.");
     }
 }
 
@@ -148,7 +190,7 @@ document.querySelector("#group_file_input").addEventListener("change", async (e)
         await loadGroupFiles();
     } catch (err) {
         console.error("Upload failed:", err);
-        toast("Upload failed.");
+        toast(err.error || "Upload failed.");
     }
     e.target.value = "";
 });
@@ -163,14 +205,19 @@ document.querySelector("#invite_btn").addEventListener("click", () => {
 document.querySelector("#invite_submit").addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.querySelector("#invite_email").value.trim();
+    if (!email) {
+        toast("Please enter an email.");
+        return;
+    }
     try {
         await apiInviteMember(email);
         toast(`Invite sent to ${email}!`, "success");
         document.querySelector("#invite_form").style.display = "none";
         document.querySelector("#invite_email").value = "";
+        loadMembers();
     } catch (err) {
         console.error("Invite failed:", err);
-        toast("Could not send invite.");
+        toast(err.error || "Could not send invite.");
     }
 });
 
@@ -184,7 +231,7 @@ document.querySelector("#leave_btn").addEventListener("click", async () => {
         window.location.href = "bonds.html";
     } catch (err) {
         console.error("Leave failed:", err);
-        toast("Could not leave group.");
+        toast(err.error || "Could not leave group.");
     }
 });
 

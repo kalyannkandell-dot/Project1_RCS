@@ -1,4 +1,3 @@
-
 function toast(msg, type = 'error') {
     let el = document.getElementById('hc_toast');
     if (!el) {
@@ -21,12 +20,14 @@ function toast(msg, type = 'error') {
 }
 
 async function loginUser(email, password) {
-    const res = await fetch(`${API_BASE}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
-    if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Login failed."); }
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Login failed."); }
     return await res.json();
 }
-
-
 
 document.querySelector('#form_login').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -44,6 +45,7 @@ document.querySelector('#form_login').addEventListener('submit', async (e) => {
         return;
     }
 
+    const originalText = btn.textContent;
     btn.textContent = 'Logging in…';
     btn.disabled = true;
 
@@ -54,7 +56,7 @@ document.querySelector('#form_login').addEventListener('submit', async (e) => {
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
     } catch (err) {
         toast(err.message || 'Login failed.');
-        btn.textContent = 'login';
+        btn.textContent = originalText;
         btn.disabled = false;
     }
 });

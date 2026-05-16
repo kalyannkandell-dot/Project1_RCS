@@ -6,8 +6,7 @@
     <title>Hamro cloud</title>
     <link rel="icon" type="image/x-icon" href="images/logo.png">
     <link rel="stylesheet" href="just.css">
-    <script src="auth.js"></script>
-    <script src="login.js" defer></script>
+    
 </head>
 
 
@@ -16,7 +15,7 @@
         <section class="auth_box">
             <h2 class="auth_title">Welcome</h2>
             <p class="auth_subtitle">login with email</p>
-            <form class="generic_form" id="form_login">
+            <form class="generic_form" id="form_login" autocomplete="off">
                 <label class="auth_label" for="email"> Email </label>
                 <input type="email" name="email" id="email" class="auth_field" placeholder="example@gmail.com" required>
                 <label for="password" class="auth_label">password</label>
@@ -34,6 +33,9 @@
 
         </section>
     </main>
+        <script src="utils.js"></script>
+    <script src="auth.js"></script>
+    <script src="login.js"></script>
 
 </body>
 </html>

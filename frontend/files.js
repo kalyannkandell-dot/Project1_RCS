@@ -1,8 +1,16 @@
-
 if (!localStorage.getItem("hc_token")) {
     window.location.href = "login.html";
 }
 
+function apiFetchFiles() {
+    return fetch(`${API_BASE}/api/files/recent?limit=50`, { headers: getAuthHeaders() }).then(r => r.json());
+}
+function apiFetchStorage() {
+    return fetch(`${API_BASE}/api/user/storage`, { headers: getAuthHeaders() }).then(r => r.json());
+}
+function apiFetchGroups() {
+    return fetch(`${API_BASE}/api/groups`, { headers: getAuthHeaders() }).then(r => r.json());
+}
 function apiUploadFile(file) {
     const formData = new FormData();
     formData.append("file", file);
@@ -18,8 +26,6 @@ function apiShareWithGroup(fileId, groupId) {
     return fetch(`${API_BASE}/api/groups/${groupId}/files/${fileId}`, { method: "POST", headers: getAuthHeaders() }).then(r => r.json());
 }
 
-
-// ========== CLASSIFY ==========
 function classifyFile(name) {
     const ext = name.split(".").pop().toLowerCase();
     if (["pdf"].includes(ext)) return "pdf";
@@ -29,8 +35,6 @@ function classifyFile(name) {
     return "other";
 }
 
-
-// ========== RENDER FILES ==========
 let allFiles = [];
 let activeFilter = "all";
 let activeSearch = "";
@@ -58,10 +62,10 @@ function renderFiles() {
             <span class="file_icon">${getFileIcon(file.name)}</span>
             <div class="file_meta">
                 <strong>${file.name}</strong>
-                <small>${file.size} · ${file.uploaded}</small>
+                <small>${formatSize(file.size)} · ${timeAgo(file.createdAt)}</small>
             </div>
             <div class="file_btns">
-                <a href="${file.url}" class="btn" download="${file.name}">Download</a>
+                <button class="btn btn_download" data-id="${file.id}" data-name="${file.name}">Download</button>
                 <button class="btn btn_share" data-id="${file.id}">Share</button>
                 <button class="btn btn_danger btn_delete" data-id="${file.id}">Delete</button>
             </div>
@@ -70,11 +74,24 @@ function renderFiles() {
     });
 
     list.querySelectorAll(".btn_delete").forEach(btn => btn.addEventListener("click", handleDelete));
-    list.querySelectorAll(".btn_share").forEach(btn => btn.addEventListener("click", openShareModal));
+list.querySelectorAll(".btn_share").forEach(btn => btn.addEventListener("click", openShareModal));
+// ADD EVERYTHING BELOW THIS
+list.querySelectorAll(".btn_download").forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const id = btn.dataset.id
+        const name = btn.dataset.name
+        const res = await fetch(`${API_BASE}/api/files/${id}/download`, { headers: getAuthHeaders() })
+        const blob = await res.blob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = name
+        a.click()
+        URL.revokeObjectURL(url)
+    })
+})
 }
 
-
-// ========== LOAD FILES ==========
 async function loadFiles() {
     try {
         allFiles = await apiFetchFiles();
@@ -85,12 +102,12 @@ async function loadFiles() {
     }
 }
 
-
-// ========== LOAD STORAGE ==========
 async function loadStorage() {
     try {
-        const { usedGB, totalGB } = await apiFetchStorage();
-        const pct = Math.min((usedGB / totalGB) * 100, 100).toFixed(1);
+        const data = await apiFetchStorage();
+        const usedGB  = (data.used  / 1073741824).toFixed(2);
+        const totalGB = (data.total / 1073741824).toFixed(2);
+        const pct = Math.min((data.used / data.total) * 100, 100).toFixed(1);
         document.querySelector(".storage_numbers").textContent = `${usedGB} GB / ${totalGB} GB`;
         document.querySelector(".storage_fill").style.width = pct + "%";
     } catch (err) {
@@ -98,48 +115,44 @@ async function loadStorage() {
     }
 }
 
-
-// ========== UPLOAD ==========
 async function uploadFile(file) {
+    if (classifyFile(file.name) === "invalid") {
+        toast("Invalid file format.");
+        return;
+    }
     toast(`Uploading ${file.name}…`);
-      if(classifyFile(file.name) === 'invalid'){
-            toast('invalid file format');
-            return ;
-        }
     try {
         const uploaded = await apiUploadFile(file);
         toast(`${uploaded.name} uploaded!`, "success");
         await loadFiles();
+        await loadStorage();
         document.querySelector("#upload_area").style.display = "none";
     } catch (err) {
         console.error("Upload failed:", err);
-        toast("Upload failed. Please try again.");
+        toast(err.error || "Upload failed. Please try again.");
     }
 }
 
-
-// ========== DELETE ==========
 async function handleDelete(e) {
-    const id = e.target.dataset.id;
-    const file = allFiles.find(f => f.id === id);
+    const id   = e.target.dataset.id;
+    const file = allFiles.find(f => String(f.id) === String(id));
     if (!confirm(`Delete "${file?.name}"?`)) return;
     try {
         await apiDeleteFile(id);
         toast(`"${file?.name}" deleted.`, "success");
         await loadFiles();
+        await loadStorage();
     } catch (err) {
         console.error("Delete failed:", err);
         toast("Delete failed.");
     }
 }
 
-
-// ========== SHARE MODAL ==========
 let activeShareFileId = null;
 
 function openShareModal(e) {
     activeShareFileId = e.target.dataset.id;
-    const file = allFiles.find(f => f.id === activeShareFileId);
+    const file = allFiles.find(f => String(f.id) === String(activeShareFileId));
     document.querySelector("#modal_title").textContent = `Share: ${file?.name}`;
 
     document.querySelector("#share_step_1").classList.remove("hidden");
@@ -180,12 +193,15 @@ document.querySelector("#share_to_group").addEventListener("click", async () => 
             return;
         }
 
-        container.innerHTML = groups.map(g => `
-            <div class="dash_card group_card floting_item share_group_item" data-group-id="${g.id}" data-group-name="${g.name}">
-                <div class="group_avatar">${g.initials}</div>
-                <div class="file_meta"><strong>${g.name}</strong></div>
-            </div>
-        `).join("");
+        container.innerHTML = groups.map(g => {
+            const initials = g.name.slice(0, 2).toUpperCase();
+            return `
+                <div class="dash_card group_card floting_item share_group_item" data-group-id="${g.id}" data-group-name="${g.name}">
+                    <div class="group_avatar">${initials}</div>
+                    <div class="file_meta"><strong>${g.name}</strong></div>
+                </div>
+            `;
+        }).join("");
 
         container.querySelectorAll(".share_group_item").forEach(card => {
             card.addEventListener("click", async () => {
@@ -224,8 +240,6 @@ document.querySelector("#share_send_person").addEventListener("click", async () 
     }
 });
 
-
-// ========== UPLOAD AREA ==========
 document.querySelector("#upload_btn").addEventListener("click", () => {
     const area = document.querySelector("#upload_area");
     area.style.display = area.style.display === "none" ? "block" : "none";
@@ -242,8 +256,6 @@ document.querySelector("#file_input").addEventListener("change", (e) => {
     e.target.value = "";
 });
 
-
-// ========== DRAG AND DROP ==========
 const dropZone = document.querySelector("#drop_zone");
 
 dropZone.addEventListener("dragover", (e) => {
@@ -263,8 +275,6 @@ dropZone.addEventListener("drop", (e) => {
     uploadFile(file);
 });
 
-
-// ========== FILTER ==========
 document.querySelectorAll(".filter_btn").forEach(btn => {
     btn.addEventListener("click", () => {
         document.querySelectorAll(".filter_btn").forEach(b => b.classList.remove("active"));
@@ -274,15 +284,11 @@ document.querySelectorAll(".filter_btn").forEach(btn => {
     });
 });
 
-
-// ========== SEARCH — files only ==========
 document.querySelector("#search").addEventListener("input", (e) => {
     activeSearch = e.target.value.trim().toLowerCase();
     renderFiles();
 });
 
-
-// ========== INIT ==========
 async function init() {
     initSidebar();
     await Promise.all([

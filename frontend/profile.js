@@ -11,10 +11,10 @@ const API = {
         const res = await fetch(`${API_BASE}/api/user/update`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ fullName, email }) });
         return await res.json();
     },
-    async changePassword(currentPassword, newPassword) {
-        const res = await fetch(`${API_BASE}/api/user/change-password`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ currentPassword, newPassword }) });
-        return await res.json();
-    },
+   async changePassword(currentPassword, newPassword) {
+    const res = await fetch(`${API_BASE}/api/auth/change-password`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ currentPassword, newPassword }) });
+    return await res.json();
+   },
     async uploadAvatar(file) {
         const formData = new FormData();
         formData.append("avatar", file);
@@ -27,25 +27,28 @@ const API = {
     }
 };
 
-
-// load profile
 async function loadProfile() {
     try {
         const data = await API.getProfile();
 
         document.querySelector("#profile_name").textContent = data.fullName;
         document.querySelector("#profile_email").textContent = data.email;
-        document.querySelector("#profile_since").textContent = "Member since " + data.memberSince;
+        document.querySelector("#profile_since").textContent = "Member since " + new Date(data.createdAt * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
         document.querySelector("#full_name").value = data.fullName;
         document.querySelector("#email").value = data.email;
 
-        if (data.avatarUrl) {
-            document.querySelector("#profile_pic_lg").src = data.avatarUrl;
+        if (data.avatarPath) {
+            document.querySelector("#profile_pic_lg").src = `${API_BASE}/${data.avatarPath}`
+            document.querySelector("#avatar").src = `${API_BASE}/${data.avatarPath}`
         }
 
-        const percent = ((data.storageUsed / data.storageTotal) * 100).toFixed(1);
-        document.querySelector(".storage_fill").style.width = percent + "%";
-        document.querySelector(".storage_numbers").textContent = `${data.storageUsed} GB / ${data.storageTotal} GB`;
+const storageRes = await fetch(`${API_BASE}/api/user/storage`, { headers: getAuthHeaders() })
+const storageData = await storageRes.json()
+const usedGB = (storageData.used / 1073741824).toFixed(2)
+const totalGB = (storageData.total / 1073741824).toFixed(2)
+const percent = Math.min((storageData.used / storageData.total) * 100, 100).toFixed(1)
+document.querySelector(".storage_fill").style.width = percent + "%"
+document.querySelector(".storage_numbers").textContent = `${usedGB} GB / ${totalGB} GB`
 
     } catch (err) {
         console.error("Profile fetch failed:", err);
@@ -54,8 +57,6 @@ async function loadProfile() {
     }
 }
 
-
-// changing profile pic
 document.querySelector("#change_pic_btn").addEventListener("click", () => {
     document.querySelector("#pic_input").click();
 });
@@ -72,16 +73,18 @@ document.querySelector("#pic_input").addEventListener("change", async (e) => {
     reader.readAsDataURL(file);
 
     try {
-        await API.uploadAvatar(file);
-        toast("Photo updated!", "success");
+        const data = await API.uploadAvatar(file)
+        if (data.avatarPath) {
+            document.querySelector("#profile_pic_lg").src = `${API_BASE}/${data.avatarPath}`
+            document.querySelector("#avatar").src = `${API_BASE}/${data.avatarPath}`
+        }
+        toast("Photo updated!", "success")
     } catch (err) {
-        console.error("Avatar upload failed:", err);
-        toast("Could not upload photo.");
+        console.error("Avatar upload failed:", err)
+        toast("Could not upload photo.")
     }
 });
 
-
-// updating profile
 document.querySelector("#update_profile").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -109,8 +112,6 @@ document.querySelector("#update_profile").addEventListener("submit", async (e) =
     }
 });
 
-
-// changing password
 document.querySelector("#change_password").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -150,9 +151,11 @@ document.querySelector("#change_password").addEventListener("submit", async (e) 
         toast("Could not change password.");
     }
 });
+document.querySelector("#logout_button").addEventListener("click", () => {
+    localStorage.removeItem('hc_token')
+    window.location.href = "index.html"
+})
 
-
-// delete account
 document.querySelector("#delete_account_btn").addEventListener("click", async () => {
     if (!confirm("Are you sure? This will permanently delete your account and all files. This cannot be undone.")) return;
     try {
@@ -164,8 +167,6 @@ document.querySelector("#delete_account_btn").addEventListener("click", async ()
     }
 });
 
-
-// init for this page
 async function init() {
     initSidebar();
     initSearch();

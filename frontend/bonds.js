@@ -1,4 +1,3 @@
-
 if (!localStorage.getItem("hc_token")) {
     window.location.href = "login.html";
 }
@@ -31,16 +30,21 @@ async function loadGroups() {
             return;
         }
 
-        container.innerHTML = groups.map(group => `
-            <a href="group.html?id=${group.id}" class="dash_card group_card floting_item">
-                <div class="group_avatar">${group.initials}</div>
-                <div class="file_meta">
-                    <strong>${group.name}</strong>
-                    <small>${group.memberCount} members · ${group.fileCount} files</small>
-                </div>
-                <span class="group_badge">${group.role}</span>
-            </a>
-        `).join("");
+        container.innerHTML = groups.map(group => {
+            const initials = group.name.slice(0, 2).toUpperCase();
+            const memberCount = group.memberCount ?? "—";
+            const fileCount   = group.fileCount   ?? "—";
+            return `
+                <a href="group.html?id=${group.id}" class="dash_card group_card floting_item">
+                    <div class="group_avatar">${initials}</div>
+                    <div class="file_meta">
+                        <strong>${group.name}</strong>
+                        <small>${memberCount} members · ${fileCount} files</small>
+                    </div>
+                    <span class="group_badge">${group.role}</span>
+                </a>
+            `;
+        }).join("");
 
     } catch (err) {
         console.error("Groups fetch failed:", err);
@@ -60,19 +64,23 @@ async function loadInvites() {
             return;
         }
 
-        container.innerHTML = invites.map(invite => `
-            <div class="dash_card group_card" id="invite_${invite.id}">
-                <div class="group_avatar">${invite.initials}</div>
-                <div class="file_meta">
-                    <strong>${invite.groupName}</strong>
-                    <small>Invited by ${invite.invitedBy} · ${invite.memberCount} members</small>
+        container.innerHTML = invites.map(invite => {
+            const initials   = invite.groupName.slice(0, 2).toUpperCase();
+            const invitedBy  = invite.invitedByName || invite.invitedByEmail;
+            return `
+                <div class="dash_card group_card" id="invite_${invite.id}">
+                    <div class="group_avatar">${initials}</div>
+                    <div class="file_meta">
+                        <strong>${invite.groupName}</strong>
+                        <small>Invited by ${invitedBy}</small>
+                    </div>
+                    <div class="file_btns">
+                        <button class="btn" onclick="acceptInvite('${invite.id}')">Accept</button>
+                        <button class="btn btn_danger" onclick="declineInvite('${invite.id}')">Decline</button>
+                    </div>
                 </div>
-                <div class="file_btns">
-                    <button class="btn" onclick="acceptInvite('${invite.id}')">Accept</button>
-                    <button class="btn btn_danger" onclick="declineInvite('${invite.id}')">Decline</button>
-                </div>
-            </div>
-        `).join("");
+            `;
+        }).join("");
 
     } catch (err) {
         console.error("Invites fetch failed:", err);

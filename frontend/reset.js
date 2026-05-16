@@ -1,17 +1,3 @@
-// line 1-12 is supposed to be dummy remove upon intigration, also line 64 and revive 53 to 63
-
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-const API = {
-    async handelresetPassword(token, password) {
-        await delay(500);
-        if (token === 'expired') throw new Error('Reset link has expired. Please request a new one.');
-        if (!token)              throw new Error('Invalid or missing reset token.');
-        return { success: true };
-    }
-};
-
-
 function toast(msg, type = 'error') {
     let el = document.getElementById('hc_toast');
     if (!el) {
@@ -33,8 +19,6 @@ function toast(msg, type = 'error') {
     el._t = setTimeout(() => { el.style.opacity = '0'; }, 2800);
 }
 
-
-
 const token = new URLSearchParams(window.location.search).get('token');
 
 if (!token) {
@@ -46,11 +30,14 @@ if (!token) {
 }
 
 async function resetPassword(token, password) {
-    const res = await fetch(`${API_BASE}/api/auth/reset-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, password }) });
-    if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Reset failed."); }
+    const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password })
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Reset failed."); }
     return await res.json();
 }
-
 
 document.querySelector('#reset_form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -72,6 +59,7 @@ document.querySelector('#reset_form').addEventListener('submit', async (e) => {
         return;
     }
 
+    const originalText = btn.textContent;
     btn.textContent = 'Resetting…';
     btn.disabled = true;
 
@@ -84,7 +72,7 @@ document.querySelector('#reset_form').addEventListener('submit', async (e) => {
         `;
     } catch (err) {
         toast(err.message || 'Reset failed.');
-        btn.textContent = 'Change password';
+        btn.textContent = originalText;
         btn.disabled = false;
     }
 });
