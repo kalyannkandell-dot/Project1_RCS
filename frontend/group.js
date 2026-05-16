@@ -1,61 +1,32 @@
+if (!localStorage.getItem("hc_token")) {
+    window.location.href = "login.html";
+}
 
-// swap these for real fetch calls on integration
-
-const DUMMY_GROUP = {
-    id: "1", name: "CS Project Team", initials: "CS",
-    memberCount: 4, fileCount: 12, createdByMe: true
-};
-
-const DUMMY_MEMBERS = [
-    { id: "me",  name: "Kalyan Kandel",  email: "kalyan@email.com",  role: "Admin",  isMe: true  },
-    { id: "2",   name: "Aayush Subedi",  email: "aayush@email.com",  role: "Member", isMe: false },
-    { id: "3",   name: "Albert Baral",   email: "albert@email.com",  role: "Member", isMe: false },
-    { id: "4",   name: "Raj Kumar",      email: "raj@email.com",     role: "Member", isMe: false },
-];
-
-const DUMMY_GROUP_FILES = [
-    { id: "1", name: "project_proposal.pdf", size: "2.1 MB", uploadedBy: "Kalyan", uploaded: "1 day ago"   },
-    { id: "2", name: "task_breakdown.xlsx",  size: "340 KB", uploadedBy: "Aayush", uploaded: "2 days ago"  },
-    { id: "3", name: "security_plan.docx",   size: "180 KB", uploadedBy: "Albert", uploaded: "3 days ago"  },
-];
-
-let memberStore = [...DUMMY_MEMBERS];
-let groupFileStore = [...DUMMY_GROUP_FILES];
-
-function apiFetchGroup()           { return Promise.resolve({...DUMMY_GROUP}); }
-function apiFetchMembers()         { return Promise.resolve([...memberStore]); }
-function apiFetchGroupFiles()      { return Promise.resolve([...groupFileStore]); }
-
+function apiFetchGroup() {
+    return fetch(`${API_BASE}/api/groups/${groupId}`, { headers: getAuthHeaders() }).then(r => r.json());
+}
+function apiFetchMembers() {
+    return fetch(`${API_BASE}/api/groups/${groupId}/members`, { headers: getAuthHeaders() }).then(r => r.json());
+}
+function apiFetchGroupFiles() {
+    return fetch(`${API_BASE}/api/groups/${groupId}/files`, { headers: getAuthHeaders() }).then(r => r.json());
+}
 function apiInviteMember(email) {
-    return Promise.resolve({ success: true });
-    // changed upon intigration
+    return fetch(`${API_BASE}/api/groups/${groupId}/invite`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ email }) }).then(r => r.json());
 }
-
 function apiRemoveMember(memberId) {
-    memberStore = memberStore.filter(m => m.id !== memberId);
-    return Promise.resolve({ success: true });
-    // changed upon intigration
+    return fetch(`${API_BASE}/api/groups/${groupId}/members/${memberId}`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
-
 function apiUploadGroupFile(file) {
-    const newFile = {
-        id: String(Date.now()), name: file.name,
-        size: formatSize(file.size), uploadedBy: "Kalyan", uploaded: "Just now"
-    };
-    groupFileStore.unshift(newFile);
-    return Promise.resolve(newFile);
-    // changed upon intigration 
+    const formData = new FormData();
+    formData.append("file", file);
+    return fetch(`${API_BASE}/api/groups/${groupId}/files`, { method: "POST", headers: getAuthHeadersNoContent(), body: formData }).then(r => r.json());
 }
-
 function apiDeleteGroupFile(fileId) {
-    groupFileStore = groupFileStore.filter(f => f.id !== fileId);
-    return Promise.resolve({ success: true });
-    // changed upon intigration
+    return fetch(`${API_BASE}/api/groups/${groupId}/files/${fileId}`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
-
 function apiLeaveGroup() {
-    return Promise.resolve({ success: true });
-    // real: DELETE /api/groups/:id/members/me
+    return fetch(`${API_BASE}/api/groups/${groupId}/members/me`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
 
 
@@ -75,7 +46,7 @@ async function loadGroupInfo() {
 }
 
 
-// loding members
+// load members
 async function loadMembers() {
     const container = document.querySelector("#members_list");
     try {
@@ -102,7 +73,7 @@ async function loadMembers() {
 }
 
 
-// removing members
+// remove member
 async function removeMember(memberId) {
     if (!confirm("Remove this member?")) return;
     try {
@@ -116,7 +87,7 @@ async function removeMember(memberId) {
 }
 
 
-// loding group files 
+// load group files
 async function loadGroupFiles() {
     const container = document.querySelector("#group_files_list");
     try {
@@ -148,7 +119,7 @@ async function loadGroupFiles() {
 }
 
 
-// deleating group files
+// delete group file
 async function deleteGroupFile(fileId) {
     if (!confirm("Delete this file?")) return;
     try {
@@ -162,7 +133,7 @@ async function deleteGroupFile(fileId) {
 }
 
 
-// uploding group files 
+// upload group file
 document.querySelector("#upload_group_btn").addEventListener("click", () => {
     document.querySelector("#group_file_input").click();
 });
@@ -183,7 +154,7 @@ document.querySelector("#group_file_input").addEventListener("change", async (e)
 });
 
 
-// invitation 
+// invite member
 document.querySelector("#invite_btn").addEventListener("click", () => {
     const form = document.querySelector("#invite_form");
     form.style.display = form.style.display === "none" ? "block" : "none";
@@ -204,7 +175,7 @@ document.querySelector("#invite_submit").addEventListener("submit", async (e) =>
 });
 
 
-// leaving the group 
+// leave group
 document.querySelector("#leave_btn").addEventListener("click", async () => {
     if (!confirm("Are you sure you want to leave this group?")) return;
     try {

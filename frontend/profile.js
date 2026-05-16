@@ -1,29 +1,34 @@
-// first 14 lines are dummy api, 18-22 is supposed to be edited on intigration  and a lot of intigration is pending too
-const MOCK = {
-    async getProfile() {
-        await delay(300);
-        return {
-            fullName: 'Kalyan Kandel',
-            email: 'kalyan@email.com',
-            memberSince: 'January 2025',
-            avatarUrl: null,
-            storageUsed: 2.3,
-            storageTotal: 10
-        };
-    }
-};
-
-
+if (!localStorage.getItem("hc_token")) {
+    window.location.href = "login.html";
+}
 
 const API = {
     async getProfile() {
-        // const res = await fetch(`${API_BASE}/api/user/me`);
-        // return await res.json();
-        return await MOCK.getProfile();
+        const res = await fetch(`${API_BASE}/api/user/me`, { headers: getAuthHeaders() });
+        return await res.json();
+    },
+    async updateProfile(fullName, email) {
+        const res = await fetch(`${API_BASE}/api/user/update`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ fullName, email }) });
+        return await res.json();
+    },
+    async changePassword(currentPassword, newPassword) {
+        const res = await fetch(`${API_BASE}/api/user/change-password`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ currentPassword, newPassword }) });
+        return await res.json();
+    },
+    async uploadAvatar(file) {
+        const formData = new FormData();
+        formData.append("avatar", file);
+        const res = await fetch(`${API_BASE}/api/user/avatar`, { method: "POST", headers: getAuthHeadersNoContent(), body: formData });
+        return await res.json();
+    },
+    async deleteAccount() {
+        const res = await fetch(`${API_BASE}/api/user/me`, { method: "DELETE", headers: getAuthHeaders() });
+        return await res.json();
     }
 };
 
 
+// load profile
 async function loadProfile() {
     try {
         const data = await API.getProfile();
@@ -50,7 +55,7 @@ async function loadProfile() {
 }
 
 
-// changing profile pic 
+// changing profile pic
 document.querySelector("#change_pic_btn").addEventListener("click", () => {
     document.querySelector("#pic_input").click();
 });
@@ -66,9 +71,13 @@ document.querySelector("#pic_input").addEventListener("change", async (e) => {
     };
     reader.readAsDataURL(file);
 
-    // still has to api intigration for this
-
-    toast("Photo updated!", "success");
+    try {
+        await API.uploadAvatar(file);
+        toast("Photo updated!", "success");
+    } catch (err) {
+        console.error("Avatar upload failed:", err);
+        toast("Could not upload photo.");
+    }
 });
 
 
@@ -77,8 +86,8 @@ document.querySelector("#update_profile").addEventListener("submit", async (e) =
     e.preventDefault();
 
     const fullName = document.querySelector("#full_name").value.trim();
-    const email = document.querySelector("#email").value.trim();
-    const msg = document.querySelector("#update_msg");
+    const email    = document.querySelector("#email").value.trim();
+    const msg      = document.querySelector("#update_msg");
 
     if (!fullName || !email) {
         msg.textContent = "Please fill in all fields.";
@@ -86,13 +95,18 @@ document.querySelector("#update_profile").addEventListener("submit", async (e) =
         return;
     }
 
-   // still has to do api intigration for this 
-
-    console.log("Update profile:", fullName, email);
-    msg.textContent = "Changes saved successfully.";
-    msg.style.color = "green";
-    document.querySelector("#profile_name").textContent = fullName;
-    toast("Profile updated!", "success");
+    try {
+        await API.updateProfile(fullName, email);
+        msg.textContent = "Changes saved successfully.";
+        msg.style.color = "green";
+        document.querySelector("#profile_name").textContent = fullName;
+        toast("Profile updated!", "success");
+    } catch (err) {
+        console.error("Update profile failed:", err);
+        msg.textContent = "Could not save changes.";
+        msg.style.color = "#cc0000";
+        toast("Could not save changes.");
+    }
 });
 
 
@@ -101,9 +115,9 @@ document.querySelector("#change_password").addEventListener("submit", async (e) 
     e.preventDefault();
 
     const currentPass = document.querySelector("#current_pass").value;
-    const newPass = document.querySelector("#new_pass").value;
+    const newPass     = document.querySelector("#new_pass").value;
     const confirmPass = document.querySelector("#confirm_pass").value;
-    const msg = document.querySelector("#password_msg");
+    const msg         = document.querySelector("#password_msg");
 
     if (!currentPass || !newPass || !confirmPass) {
         msg.textContent = "Please fill in all fields.";
@@ -122,22 +136,31 @@ document.querySelector("#change_password").addEventListener("submit", async (e) 
         msg.style.color = "#cc0000";
         return;
     }
-   
-    // api intigration for this is not done 
 
-    console.log("Password change submitted");
-    msg.textContent = "Password updated successfully.";
-    msg.style.color = "green";
-    document.querySelector("#change_password").reset();
-    toast("Password changed!", "success");
+    try {
+        await API.changePassword(currentPass, newPass);
+        msg.textContent = "Password updated successfully.";
+        msg.style.color = "green";
+        document.querySelector("#change_password").reset();
+        toast("Password changed!", "success");
+    } catch (err) {
+        console.error("Password change failed:", err);
+        msg.textContent = "Current password is wrong.";
+        msg.style.color = "#cc0000";
+        toast("Could not change password.");
+    }
 });
 
 
-// delete account 
+// delete account
 document.querySelector("#delete_account_btn").addEventListener("click", async () => {
-    if (confirm("Are you sure? This will permanently delete your account and all files. This cannot be undone.")) {
-        // api intigration for this is not done 
+    if (!confirm("Are you sure? This will permanently delete your account and all files. This cannot be undone.")) return;
+    try {
+        await API.deleteAccount();
         window.location.href = "index.html";
+    } catch (err) {
+        console.error("Delete account failed:", err);
+        toast("Could not delete account.");
     }
 });
 

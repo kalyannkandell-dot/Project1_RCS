@@ -1,57 +1,17 @@
-
-// swap for real fetch calls on integration
-
-const DUMMY_SHARED_WITH_ME = [
-    { id: "sw1", name: "semester_notes.pdf", sharedBy: "Aayush", size: "3.2 MB", ago: "1 day ago",  downloadUrl: "#" },
-    { id: "sw2", name: "event_poster.png",   sharedBy: "Albert", size: "1.8 MB", ago: "2 days ago", downloadUrl: "#" },
-    { id: "sw3", name: "budget_2025.xlsx",   sharedBy: "Aayush", size: "420 KB", ago: "4 days ago", downloadUrl: "#" },
-];
-
-const DUMMY_SHARED_BY_ME = [
-    { id: "sb1", name: "project_report.pdf",  sharedWith: "Aayush, Albert", size: "1.2 MB", ago: "2 hours ago" },
-    { id: "sb2", name: "notes_chapter3.docx", sharedWith: "Aayush",         size: "540 KB", ago: "3 days ago"  },
-];
-
-const DUMMY_LINKS = [
-    { id: "lk1", name: "campus_photo.jpg",   expiry: "20 May 2025", password: false, url: "https://hamrocloud.app/s/abc123" },
-    { id: "lk2", name: "project_report.pdf", expiry: "25 May 2025", password: true,  url: "https://hamrocloud.app/s/xyz789" },
-];
-
-let sharedWithMeStore = [...DUMMY_SHARED_WITH_ME];
-let sharedByMeStore   = [...DUMMY_SHARED_BY_ME];
-let linksStore        = [...DUMMY_LINKS];
-
-function apiFetchSharedWithMe() { return Promise.resolve([...sharedWithMeStore]); }
-function apiFetchSharedByMe()   { return Promise.resolve([...sharedByMeStore]); }
-function apiFetchLinks()        { return Promise.resolve([...linksStore]); }
-
+if (!localStorage.getItem("hc_token")) {
+    window.location.href = "login.html";
+}
+function apiFetchSharedWithMe() {
+    return fetch(`${API_BASE}/api/shared/with-me`, { headers: getAuthHeaders() }).then(r => r.json());
+}
+function apiFetchSharedByMe() {
+    return fetch(`${API_BASE}/api/shared/by-me`, { headers: getAuthHeaders() }).then(r => r.json());
+}
 function apiRevokeShare(shareId) {
-    sharedByMeStore = sharedByMeStore.filter(f => f.id !== shareId);
-    return Promise.resolve({ success: true });
-    // changed upon integration
+    return fetch(`${API_BASE}/api/shared/${shareId}`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
 
-function apiCreateLink(file, expiry, password) {
-    const newLink = {
-        id: "lk" + Date.now(),
-        name: file,
-        expiry: expiry || "No expiry",
-        password: !!password,
-        url: "https://hamrocloud.app/s/" + Math.random().toString(36).slice(2, 9)
-    };
-    linksStore.unshift(newLink);
-    return Promise.resolve(newLink);
-    // changed upon integration
-}
-
-function apiRevokeLink(linkId) {
-    linksStore = linksStore.filter(l => l.id !== linkId);
-    return Promise.resolve({ success: true });
-    // changed upon integration
-}
-
-
-// rendering share with me 
+// ========== RENDER SHARED WITH ME ==========
 async function loadSharedWithMe() {
     const container = document.querySelector("#shared_with_me_list");
     try {
@@ -82,7 +42,7 @@ async function loadSharedWithMe() {
 }
 
 
-// rendering shared by me 
+// ========== RENDER SHARED BY ME ==========
 async function loadSharedByMe() {
     const container = document.querySelector("#shared_by_me_list");
     try {
@@ -113,7 +73,7 @@ async function loadSharedByMe() {
 }
 
 
-// revokind share 
+// ========== REVOKE SHARE ==========
 async function revokeShare(shareId, btnEl) {
     if (!confirm("Revoke this share?")) return;
     btnEl.textContent = "…";
@@ -131,110 +91,7 @@ async function revokeShare(shareId, btnEl) {
 }
 
 
-// render links 
-async function loadLinks() {
-    const container = document.querySelector("#links_list");
-    try {
-        const links = await apiFetchLinks();
-
-        if (!links.length) {
-            container.innerHTML = "<p>No share links yet.</p>";
-            return;
-        }
-
-        container.innerHTML = links.map(l => `
-            <div class="dash_card file_row floting_item" data-id="${l.id}">
-                <span class="file_icon">🔗</span>
-                <div class="file_meta">
-                    <strong>${l.name}</strong>
-                    <small>Expires: ${l.expiry} · ${l.password ? "Password protected 🔒" : "No password"}</small>
-                </div>
-                <div class="file_btns">
-                    <button class="btn" onclick="copyLink('${l.url}', this)">Copy Link</button>
-                    <button class="btn btn_danger" onclick="revokeLink('${l.id}', this)">Revoke</button>
-                </div>
-            </div>
-        `).join("");
-
-    } catch (err) {
-        console.error("Failed to load links:", err);
-        container.innerHTML = "<p>Could not load share links.</p>";
-    }
-}
-
-
-// copy link 
-function copyLink(url, btnEl) {
-    navigator.clipboard.writeText(url)
-        .then(() => {
-            toast("Link copied!", "success");
-            const orig = btnEl.textContent;
-            btnEl.textContent = "Copied!";
-            setTimeout(() => { btnEl.textContent = orig; }, 1800);
-        })
-        .catch(() => toast("Could not copy link."));
-}
-
-
-// revoke link 
-async function revokeLink(linkId, btnEl) {
-    if (!confirm("Revoke this link? Anyone using it will lose access.")) return;
-    btnEl.textContent = "…";
-    btnEl.disabled = true;
-    try {
-        await apiRevokeLink(linkId);
-        toast("Link revoked.", "success");
-        await loadLinks();
-    } catch (err) {
-        console.error("Revoke failed:", err);
-        toast("Failed to revoke link.");
-        btnEl.textContent = "Revoke";
-        btnEl.disabled = false;
-    }
-}
-
-
-// form for new link 
-document.querySelector("#new_link_btn").addEventListener("click", () => {
-    const form = document.querySelector("#new_link_form");
-    form.style.display = form.style.display === "none" ? "block" : "none";
-});
-
-document.querySelector("#link_form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const btn      = document.querySelector("#auth_button");
-    const file     = document.querySelector("#link_file").value.trim();
-    const expiry   = document.querySelector("#link_expiry").value;
-    const password = document.querySelector("#link_pass").value;
-
-    btn.textContent = "Generating…";
-    btn.disabled = true;
-
-    try {
-        await apiCreateLink(file, expiry, password);
-        toast("Share link created!", "success");
-        await loadLinks();
-        document.querySelector("#new_link_form").style.display = "none";
-        document.querySelector("#link_form").reset();
-    } catch (err) {
-        console.error("Link creation failed:", err);
-        toast("Failed to create link.");
-    } finally {
-        btn.textContent = "Generate Link";
-        btn.disabled = false;
-    }
-});
-
-document.addEventListener("click", (e) => {
-    const form = document.querySelector("#new_link_form");
-    const btn  = document.querySelector("#new_link_btn");
-    if (!form.contains(e.target) && !btn.contains(e.target)) {
-        form.style.display = "none";
-    }
-});
-
-
-// tabs
+// ========== TABS ==========
 const tabs = document.querySelectorAll(".tab_btn");
 tabs.forEach(btn => {
     btn.addEventListener("click", () => {
@@ -246,16 +103,50 @@ tabs.forEach(btn => {
 });
 
 
+// ========== SEARCH — scoped to visible file rows only ==========
+document.querySelector("#search").addEventListener("input", (e) => {
+    const query = e.target.value.trim().toLowerCase();
+    const dropdown = document.querySelector("#search_results");
 
-// init for this page 
+    if (query.length < 1) {
+        dropdown.style.display = "none";
+        return;
+    }
+
+    const matches = [];
+    document.querySelectorAll(".file_row").forEach(row => {
+        // only search visible rows (active tab)
+        if (row.offsetParent === null) return;
+        const nameEl = row.querySelector("strong");
+        if (nameEl && nameEl.textContent.toLowerCase().includes(query)) {
+            matches.push({
+                name: nameEl.textContent,
+                icon: row.querySelector(".file_icon")?.textContent || "📁"
+            });
+        }
+    });
+
+    dropdown.innerHTML = matches.length
+        ? matches.map(f => `<div class="search_item"><span>${f.icon}</span><span>${f.name}</span></div>`).join("")
+        : `<div class="search_item">No results found</div>`;
+
+    dropdown.style.display = "block";
+});
+
+document.addEventListener("click", (e) => {
+    if (!e.target.closest("#search")) {
+        document.querySelector("#search_results").style.display = "none";
+    }
+});
+
+
+// ========== INIT ==========
 async function init() {
     initSidebar();
-    initSearch();
     await Promise.all([
         loadUserHeader(),
         loadSharedWithMe(),
-        loadSharedByMe(),
-        loadLinks()
+        loadSharedByMe()
     ]);
 }
 

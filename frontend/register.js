@@ -33,18 +33,9 @@ function toast(msg, type = 'error') {
 
 
 async function registerUser(email, password) {
-    // --- swap this block for real fetch when backend is ready ---
-    // const res  = await fetch('/api/auth/register', {
-    //     method:  'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body:    JSON.stringify({ email, password })
-    // });
-    // if (!res.ok) {
-    //     const err = await res.json();
-    //     throw new Error(err.message || 'Registration failed.');
-    // }
-    // return await res.json();
-    return await API.register(email, password);
+    const res = await fetch(`${API_BASE}/api/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Registration failed."); }
+    return await res.json();
 }
 
 

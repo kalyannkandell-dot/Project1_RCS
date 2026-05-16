@@ -1,18 +1,3 @@
-// from line 1 to 15 is dummy so remove also line 50 is dummy and line 39-49 is supposed to be used with backend 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-const MOCK_USERS = [
-    { email: 'user@gmail.com', password: 'password123', token: 'mock_jwt_token_abc123' }
-];
-
-const API = {
-    async login(email, password) {
-        await delay(500);
-        const user = MOCK_USERS.find(u => u.email === email && u.password === password);
-        if (!user) throw new Error('Invalid email or password.');
-        return { token: user.token };
-    }
-};
 
 function toast(msg, type = 'error') {
     let el = document.getElementById('hc_toast');
@@ -36,18 +21,9 @@ function toast(msg, type = 'error') {
 }
 
 async function loginUser(email, password) {
-    // --- swap this block for real fetch when backend is ready ---
-    // const res  = await fetch('/api/auth/login', {
-    //     method:  'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body:    JSON.stringify({ email, password })
-    // });
-    // if (!res.ok) {
-    //     const err = await res.json();
-    //     throw new Error(err.message || 'Login failed.');
-    // }
-    // return await res.json();
-    return await API.login(email, password);
+    const res = await fetch(`${API_BASE}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Login failed."); }
+    return await res.json();
 }
 
 

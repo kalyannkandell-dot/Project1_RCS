@@ -6,6 +6,7 @@
     <title>Hamro Cloud - My Files</title>
     <link rel="icon" type="image/x-icon" href="images/logo.png">
     <link rel="stylesheet" href="just.css">
+    <script src="auth.js"></script>
     <script src="utils.js" defer></script>
     <script src="files.js" defer></script>
 </head>
@@ -25,7 +26,6 @@
         <h1>HAMRO CLOUD</h1>
 
         <div class="header_right">
-            <!--  removed form wrapper,  caused page reload on Enter key -->
             <input type="search" id="search" name="query" placeholder="Search files...">
             <div id="search_results" class="search_dropdown" style="display:none;"></div>
             <a href="profile.html"><img src="images/profilepic.png" alt="" id="avatar" class="floting_item"></a>
@@ -53,10 +53,7 @@
         <!-- file input -->
         <input type="file" id="file_input" style="display:none;">
 
-        <!-- popup -->
-        <div id="toast" style="display:none;"></div>
-
-        <!-- uplode are -->
+        <!-- upload area -->
         <section class="dash_card" id="upload_area" style="display:none;">
             <div id="drop_zone" class="drop_zone">
                 <p>Drag & drop file here</p>
@@ -67,13 +64,13 @@
 
         <!-- storage bar -->
         <section class="dash_card">
-            <p class="dash_label">Storage — <span id="storage_label">Loading…</span></p>
+            <p class="dash_label">Storage — <strong class="storage_numbers">Loading…</strong></p>
             <div class="storage_bar">
-                <div class="storage_fill" id="storage_fill" style="width:0%"></div>
+                <div class="storage_fill" style="width:0%"></div>
             </div>
         </section>
 
-        <!-- filtering -->
+        <!-- filter -->
         <div class="filter_bar">
             <button class="filter_btn active" data-filter="all">All</button>
             <button class="filter_btn" data-filter="pdf">PDF</button>
@@ -83,11 +80,45 @@
         </div>
 
         <!-- file list -->
-        <section class="dash_section" id="file_list">
-            <!-- files are brought by js -->
-        </section>
+        <section class="dash_section" id="file_list"></section>
 
     </main>
+
+    <!-- share modal -->
+    <div id="share_modal" class="share_modal">
+        <div class="dash_card share_modal_box">
+
+            <div class="share_modal_head">
+                <h2 id="modal_title">Share File</h2>
+                <button id="modal_close" class="btn">✕</button>
+            </div>
+
+            <!-- step 1 -->
+            <div id="share_step_1">
+                <p class="share_modal_subtitle">Share with:</p>
+                <div class="share_type_btns">
+                    <button class="btn floting_item" id="share_to_person">👤 Person</button>
+                    <button class="btn floting_item" id="share_to_group">👥 Group</button>
+                </div>
+            </div>
+
+            <!-- step 2a: person -->
+            <div id="share_step_person" class="hidden">
+                <label class="auth_label" for="share_email">Email address</label>
+                <input type="email" id="share_email" class="auth_field share_email_input" placeholder="friend@email.com">
+                <button class="btn floting_item share_send_btn" id="share_send_person">Send</button>
+            </div>
+
+            <!-- step 2b: group -->
+            <div id="share_step_group" class="hidden">
+                <p class="share_modal_subtitle">Choose a group:</p>
+                <div id="share_group_list" class="share_group_list">
+                    <p>Loading groups...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <footer></footer>
 </body>

@@ -77,12 +77,28 @@ function initSidebar() {
 
 
 // search button 
-function initSearch(getRows) {
-    // getRows is an optional function that returns items to search
-    // if not passed, searches .file_row elements on the page
+
+function initSearch() {
     const input = document.querySelector("#search");
     const dropdown = document.querySelector("#search_results");
     if (!input || !dropdown) return;
+
+    // fetch all files once for global search
+    let allFilesCache = [];
+    fetch(`${API_BASE}/api/files`)
+        .then(r => r.json())
+        .then(files => { allFilesCache = files; })
+        .catch(() => {
+            // backend not ready yet — use dummy fallback
+            allFilesCache = [
+                { name: "project_report.pdf" },
+                { name: "database_backup.sql" },
+                { name: "campus_photo.jpg" },
+                { name: "notes_chapter3.docx" },
+                { name: "marks_sheet.xlsx" },
+                { name: "id_card_scan.png" },
+            ];
+        });
 
     input.addEventListener("input", (e) => {
         const query = e.target.value.trim().toLowerCase();
@@ -92,40 +108,23 @@ function initSearch(getRows) {
             return;
         }
 
-        const matches = [];
-        document.querySelectorAll(".file_row").forEach(row => {
-            const nameEl = row.querySelector("strong");
-            if (nameEl && nameEl.textContent.toLowerCase().includes(query)) {
-                matches.push({
-                    name: nameEl.textContent,
-                    icon: row.querySelector(".file_icon")?.textContent || "📁"
-                });
-            }
-        });
+        const matches = allFilesCache.filter(f =>
+            f.name.toLowerCase().includes(query)
+        );
 
-        // also search group cards
-        document.querySelectorAll(".group_card").forEach(card => {
-            const nameEl = card.querySelector("strong");
-            if (nameEl && nameEl.textContent.toLowerCase().includes(query)) {
-                matches.push({ name: nameEl.textContent, icon: "👥" });
-            }
-        });
-
-        if (matches.length === 0) {
-            dropdown.innerHTML = `<div class="search_item">No results found</div>`;
-        } else {
-            dropdown.innerHTML = matches.map(f => `
-                <div class="search_item">
-                    <span>${f.icon}</span>
+        dropdown.innerHTML = matches.length
+            ? matches.map(f => `
+                <div class="search_item" onclick="window.location.href='files.html'">
+                    <span>${getFileIcon(f.name)}</span>
                     <span>${f.name}</span>
-                </div>
-            `).join("");
-        }
+                </div>`).join("")
+            : `<div class="search_item">No results found</div>`;
+
         dropdown.style.display = "block";
     });
 
     document.addEventListener("click", (e) => {
-        if (!e.target.closest("form[role='search']")) {
+        if (!e.target.closest("#search")) {
             dropdown.style.display = "none";
         }
     });

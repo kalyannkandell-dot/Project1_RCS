@@ -1,44 +1,25 @@
 
-//  first 38lines are dummy api layer 
-//  Swap these functions for real fetch calls on integration
-
-const DUMMY_FILES = [
-    { id: "1", name: "project_report.pdf",  size: "1.2 MB", uploaded: "2 hours ago", url: "#" },
-    { id: "2", name: "database_backup.sql", size: "4.8 MB", uploaded: "Yesterday",   url: "#" },
-    { id: "3", name: "campus_photo.jpg",    size: "3.1 MB", uploaded: "2 days ago",  url: "#" },
-    { id: "4", name: "notes_chapter3.docx", size: "540 KB", uploaded: "3 days ago",  url: "#" },
-    { id: "5", name: "marks_sheet.xlsx",    size: "210 KB", uploaded: "4 days ago",  url: "#" },
-    { id: "6", name: "id_card_scan.png",    size: "890 KB", uploaded: "5 days ago",  url: "#" },
-];
-
-let fileStore = [...DUMMY_FILES];
-let nextId = fileStore.length + 1;
-
-function apiFetchFiles()    { return Promise.resolve([...fileStore]); }
-function apiFetchStorage()  { return Promise.resolve({ usedGB: 2.3, totalGB: 10 }); }
+if (!localStorage.getItem("hc_token")) {
+    window.location.href = "login.html";
+}
 
 function apiUploadFile(file) {
-    const newFile = { id: String(nextId++), name: file.name, size: formatSize(file.size), uploaded: "Just now", url: "#" };
-    fileStore.unshift(newFile);
-    return Promise.resolve(newFile);
-    // to be swapped upon intigration 
+    const formData = new FormData();
+    formData.append("file", file);
+    return fetch(`${API_BASE}/api/files`, { method: "POST", headers: getAuthHeadersNoContent(), body: formData }).then(r => r.json());
 }
-
 function apiDeleteFile(id) {
-    fileStore = fileStore.filter(f => f.id !== id);
-    return Promise.resolve({ success: true });
-    // to be swapped
+    return fetch(`${API_BASE}/api/files/${id}`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
+}
+function apiShareWithPerson(fileId, email) {
+    return fetch(`${API_BASE}/api/files/${fileId}/share/person`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ email }) }).then(r => r.json());
+}
+function apiShareWithGroup(fileId, groupId) {
+    return fetch(`${API_BASE}/api/groups/${groupId}/files/${fileId}`, { method: "POST", headers: getAuthHeaders() }).then(r => r.json());
 }
 
-function apiShareFile(id) {
-    const file = fileStore.find(f => f.id === id);
-    return Promise.resolve({ link: `https://hamrocloud.app/share/${id}/${file?.name}` });
-    // to be swapped 
-}
 
-
-// helper
-
+// ========== CLASSIFY ==========
 function classifyFile(name) {
     const ext = name.split(".").pop().toLowerCase();
     if (["pdf"].includes(ext)) return "pdf";
@@ -48,11 +29,10 @@ function classifyFile(name) {
 }
 
 
-//  RENDER
-
+// ========== RENDER FILES ==========
 let allFiles = [];
 let activeFilter = "all";
-let activeSearch  = "";
+let activeSearch = "";
 
 function renderFiles() {
     const list = document.querySelector("#file_list");
@@ -89,23 +69,23 @@ function renderFiles() {
     });
 
     list.querySelectorAll(".btn_delete").forEach(btn => btn.addEventListener("click", handleDelete));
-    list.querySelectorAll(".btn_share").forEach(btn => btn.addEventListener("click", handleShare));
+    list.querySelectorAll(".btn_share").forEach(btn => btn.addEventListener("click", openShareModal));
 }
 
 
-//  load files and storage 
-
-
+// ========== LOAD FILES ==========
 async function loadFiles() {
     try {
         allFiles = await apiFetchFiles();
         renderFiles();
     } catch (err) {
         console.error("Failed to load files:", err);
-        toast("Could not load files.", "error");
+        toast("Could not load files.");
     }
 }
 
+
+// ========== LOAD STORAGE ==========
 async function loadStorage() {
     try {
         const { usedGB, totalGB } = await apiFetchStorage();
@@ -118,8 +98,7 @@ async function loadStorage() {
 }
 
 
-//  upload
-
+// ========== UPLOAD ==========
 async function uploadFile(file) {
     toast(`Uploading ${file.name}…`);
     try {
@@ -129,14 +108,12 @@ async function uploadFile(file) {
         document.querySelector("#upload_area").style.display = "none";
     } catch (err) {
         console.error("Upload failed:", err);
-        toast("Upload failed. Please try again.", "error");
+        toast("Upload failed. Please try again.");
     }
 }
 
 
-
-//  DELETE
-
+// ========== DELETE ==========
 async function handleDelete(e) {
     const id = e.target.dataset.id;
     const file = allFiles.find(f => f.id === id);
@@ -147,32 +124,103 @@ async function handleDelete(e) {
         await loadFiles();
     } catch (err) {
         console.error("Delete failed:", err);
-        toast("Delete failed.", "error");
+        toast("Delete failed.");
     }
 }
 
 
-// share
+// ========== SHARE MODAL ==========
+let activeShareFileId = null;
 
-async function handleShare(e) {
-    const id = e.target.dataset.id;
+function openShareModal(e) {
+    activeShareFileId = e.target.dataset.id;
+    const file = allFiles.find(f => f.id === activeShareFileId);
+    document.querySelector("#modal_title").textContent = `Share: ${file?.name}`;
+
+    document.querySelector("#share_step_1").classList.remove("hidden");
+    document.querySelector("#share_step_person").classList.add("hidden");
+    document.querySelector("#share_step_group").classList.add("hidden");
+    document.querySelector("#share_email").value = "";
+
+    document.querySelector("#share_modal").classList.add("active");
+}
+
+function closeShareModal() {
+    document.querySelector("#share_modal").classList.remove("active");
+    activeShareFileId = null;
+}
+
+document.querySelector("#share_modal").addEventListener("click", (e) => {
+    if (e.target === document.querySelector("#share_modal")) closeShareModal();
+});
+
+document.querySelector("#modal_close").addEventListener("click", closeShareModal);
+
+document.querySelector("#share_to_person").addEventListener("click", () => {
+    document.querySelector("#share_step_1").classList.add("hidden");
+    document.querySelector("#share_step_person").classList.remove("hidden");
+});
+
+document.querySelector("#share_to_group").addEventListener("click", async () => {
+    document.querySelector("#share_step_1").classList.add("hidden");
+    document.querySelector("#share_step_group").classList.remove("hidden");
+
+    const container = document.querySelector("#share_group_list");
+    container.innerHTML = "<p>Loading groups...</p>";
+
     try {
-        const { link } = await apiShareFile(id);
-        if (navigator.clipboard) {
-            await navigator.clipboard.writeText(link);
-            toast("Share link copied!", "success");
-        } else {
-            prompt("Copy this share link:", link);
+        const groups = await apiFetchGroups();
+        if (!groups.length) {
+            container.innerHTML = "<p>You are not in any groups.</p>";
+            return;
         }
+
+        container.innerHTML = groups.map(g => `
+            <div class="dash_card group_card floting_item share_group_item" data-group-id="${g.id}" data-group-name="${g.name}">
+                <div class="group_avatar">${g.initials}</div>
+                <div class="file_meta"><strong>${g.name}</strong></div>
+            </div>
+        `).join("");
+
+        container.querySelectorAll(".share_group_item").forEach(card => {
+            card.addEventListener("click", async () => {
+                const groupId   = card.dataset.groupId;
+                const groupName = card.dataset.groupName;
+                try {
+                    await apiShareWithGroup(activeShareFileId, groupId);
+                    toast(`Shared to ${groupName}!`, "success");
+                    closeShareModal();
+                } catch (err) {
+                    console.error("Share to group failed:", err);
+                    toast("Could not share to group.");
+                }
+            });
+        });
+
     } catch (err) {
-        console.error("Share failed:", err);
-        toast("Could not generate share link.", "error");
+        console.error("Failed to load groups:", err);
+        container.innerHTML = "<p>Could not load groups.</p>";
     }
-}
+});
+
+document.querySelector("#share_send_person").addEventListener("click", async () => {
+    const email = document.querySelector("#share_email").value.trim();
+    if (!email) {
+        toast("Please enter an email address.");
+        return;
+    }
+    try {
+        await apiShareWithPerson(activeShareFileId, email);
+        toast(`File shared with ${email}!`, "success");
+        closeShareModal();
+    } catch (err) {
+        console.error("Share to person failed:", err);
+        toast("Could not share file.");
+    }
+});
 
 
-//  upload area toggle 
-
+// ========== UPLOAD AREA ==========
 document.querySelector("#upload_btn").addEventListener("click", () => {
     const area = document.querySelector("#upload_area");
     area.style.display = area.style.display === "none" ? "block" : "none";
@@ -190,8 +238,7 @@ document.querySelector("#file_input").addEventListener("change", (e) => {
 });
 
 
-//  drag and drop 
-
+// ========== DRAG AND DROP ==========
 const dropZone = document.querySelector("#drop_zone");
 
 dropZone.addEventListener("dragover", (e) => {
@@ -212,8 +259,7 @@ dropZone.addEventListener("drop", (e) => {
 });
 
 
-// filter button
-
+// ========== FILTER ==========
 document.querySelectorAll(".filter_btn").forEach(btn => {
     btn.addEventListener("click", () => {
         document.querySelectorAll(".filter_btn").forEach(b => b.classList.remove("active"));
@@ -224,19 +270,16 @@ document.querySelectorAll(".filter_btn").forEach(btn => {
 });
 
 
-//  search, filters rendered list, dropdown from utils
-
+// ========== SEARCH — files only ==========
 document.querySelector("#search").addEventListener("input", (e) => {
     activeSearch = e.target.value.trim().toLowerCase();
     renderFiles();
 });
 
 
-// init for this page 
-
+// ========== INIT ==========
 async function init() {
     initSidebar();
-    initSearch();
     await Promise.all([
         loadUserHeader(),
         loadFiles(),

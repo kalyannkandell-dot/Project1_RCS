@@ -6,6 +6,7 @@
     <title>Hamro Cloud - Shared</title>
     <link rel="icon" type="image/x-icon" href="images/logo.png">
     <link rel="stylesheet" href="just.css">
+    <script src="auth.js"></script>
     <script src="utils.js" defer></script>
     <script src="shared.js" defer></script>
 </head>
@@ -43,11 +44,10 @@
 
     <main class="dash_main">
 
-        <!-- tabs -->
+        <!-- tabs — links tab removed -->
         <div class="tab_bar">
             <button class="tab_btn active" data-tab="shared_with_me">Shared With Me</button>
             <button class="tab_btn" data-tab="shared_by_me">Shared By Me</button>
-            <button class="tab_btn" data-tab="links">My Links</button>
         </div>
 
         <!-- shared with me -->
@@ -62,35 +62,6 @@
         <section class="dash_section" id="shared_by_me" style="display:none;">
             <h2>Shared By Me</h2>
             <div id="shared_by_me_list">
-                <p>Loading...</p>
-            </div>
-        </section>
-
-        <!-- my links -->
-        <section class="dash_section" id="links" style="display:none;">
-            <div class="dash_section_head">
-                <h2>My Shared Links</h2>
-                <button class="btn floting_item" id="new_link_btn">+ New Link</button>
-            </div>
-
-            <!-- new link form -->
-            <div class="dash_card" id="new_link_form" style="display:none;">
-                <h2 style="margin-bottom: 1rem;">Create Share Link</h2>
-                <form id="link_form">
-                    <label class="auth_label" for="link_file">File Name</label>
-                    <input type="text" id="link_file" class="auth_field" placeholder="e.g. project_report.pdf" required>
-
-                    <label class="auth_label" for="link_expiry" style="margin-top: 0.75rem;">Expiry Date</label>
-                    <input type="date" id="link_expiry" class="auth_field">
-
-                    <label class="auth_label" for="link_pass" style="margin-top: 0.75rem;">Password (optional)</label>
-                    <input type="password" id="link_pass" class="auth_field" placeholder="Leave empty for no password">
-
-                    <button type="submit" id="auth_button" style="margin-top: 0.75rem;">Generate Link</button>
-                </form>
-            </div>
-
-            <div id="links_list">
                 <p>Loading...</p>
             </div>
         </section>

@@ -6,10 +6,9 @@
     <title>Hamro Cloud - Dashboard</title>
     <link rel="icon" type="image/x-icon" href="images/logo.png">
     <link rel="stylesheet" href="just.css">
-    
+    <script src="auth.js"></script>
     <script src="utils.js" defer></script>
     <script src="dashboard.js" defer></script>
-    
 </head>
 <body>
 
@@ -27,7 +26,6 @@
         <h1>HAMRO CLOUD</h1>
 
         <div class="header_right">
-            <!--  removed form wrapper,  caused page reload on Enter key -->
             <input type="search" id="search" name="query" placeholder="Search files...">
             <div id="search_results" class="search_dropdown" style="display:none;"></div>
             <a href="profile.html"><img src="images/profilepic.png" alt="" id="avatar" class="floting_item"></a>
@@ -46,7 +44,7 @@
 
     <main class="dash_main">
 
-        <!-- STORAGE -->
+        <!-- storage -->
         <section class="dash_card">
             <p class="dash_label">Storage — <strong class="storage_numbers">Loading...</strong></p>
             <div class="storage_bar">
@@ -54,7 +52,7 @@
             </div>
         </section>
 
-        <!-- STATS -->
+        <!-- stats -->
         <section class="dash_grid">
             <div class="dash_card dash_stat floting_item">
                 <span class="dash_label">Total Files</span>
@@ -74,7 +72,7 @@
             </div>
         </section>
 
-        <!-- QUICK ACTIONS -->
+        <!-- quick actions -->
         <section class="dash_section">
             <div class="dash_section_head">
                 <h2>Quick Actions</h2>
@@ -87,7 +85,7 @@
             </div>
         </section>
 
-        <!-- RECENT FILES -->
+        <!-- recent files -->
         <section class="dash_section">
             <div class="dash_section_head">
                 <h2>Recent Files</h2>
@@ -98,7 +96,7 @@
             </div>
         </section>
 
-        <!-- MY GROUPS -->
+        <!-- my groups -->
         <section class="dash_section">
             <div class="dash_section_head">
                 <h2>My Groups</h2>
@@ -110,6 +108,42 @@
         </section>
 
     </main>
+
+    <!-- share modal -->
+    <div id="share_modal" class="share_modal">
+        <div class="dash_card share_modal_box">
+
+            <div class="share_modal_head">
+                <h2 id="modal_title">Share File</h2>
+                <button id="modal_close" class="btn">✕</button>
+            </div>
+
+            <!-- step 1 -->
+            <div id="share_step_1">
+                <p class="share_modal_subtitle">Share with:</p>
+                <div class="share_type_btns">
+                    <button class="btn floting_item" id="share_to_person">👤 Person</button>
+                    <button class="btn floting_item" id="share_to_group">👥 Group</button>
+                </div>
+            </div>
+
+            <!-- step 2a: person -->
+            <div id="share_step_person" class="hidden">
+                <label class="auth_label" for="share_email">Email address</label>
+                <input type="email" id="share_email" class="auth_field share_email_input" placeholder="friend@email.com">
+                <button class="btn floting_item share_send_btn" id="share_send_person">Send</button>
+            </div>
+
+            <!-- step 2b: group -->
+            <div id="share_step_group" class="hidden">
+                <p class="share_modal_subtitle">Choose a group:</p>
+                <div id="share_group_list" class="share_group_list">
+                    <p>Loading groups...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <footer></footer>
 </body>

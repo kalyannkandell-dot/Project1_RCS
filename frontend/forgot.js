@@ -1,13 +1,4 @@
-// line 1-10 is supposed to be removed with line 48 and line 37-47 are supposed to be revived in order for intigration 
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-const API = {
-    async forgotPassword(email) {
-        await delay(500);
-        if (email === 'notfound@gmail.com') throw new Error('No account found with that email.');
-        return { success: true };
-    }
-};
 
 
 function toast(msg, type = 'error') {
@@ -34,18 +25,9 @@ function toast(msg, type = 'error') {
 
 
 async function requestRecovery(email) {
-    // --- swap this block for real fetch when backend is ready ---
-    // const res = await fetch('/api/auth/forgot-password', {
-    //     method:  'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body:    JSON.stringify({ email })
-    // });
-    // if (!res.ok) {
-    //     const err = await res.json();
-    //     throw new Error(err.message || 'Request failed.');
-    // }
-    // return await res.json();
-    return await API.forgotPassword(email);
+    const res = await fetch(`${API_BASE}/api/auth/forgot-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Request failed."); }
+    return await res.json();
 }
 
 

@@ -1,37 +1,22 @@
 
-// upto line 35 is dummy api changed upon intigration 
-const DUMMY_GROUPS = [
-    { id: "1", name: "CS Project Team",   initials: "CS", memberCount: 4,  fileCount: 12, role: "Admin"  },
-    { id: "2", name: "BCA Department",    initials: "BD", memberCount: 18, fileCount: 34, role: "Member" },
-    { id: "3", name: "Personal Research", initials: "PR", memberCount: 2,  fileCount: 5,  role: "Admin"  },
-];
+if (!localStorage.getItem("hc_token")) {
+    window.location.href = "login.html";
+}
 
-const DUMMY_INVITES = [
-    { id: "1", groupName: "Web Dev Club",    initials: "WD", invitedBy: "Aayush", memberCount: 8  },
-    { id: "2", groupName: "Design Society",  initials: "DS", invitedBy: "Albert", memberCount: 12 },
-];
-
-let groupStore = [...DUMMY_GROUPS];
-
-function apiFetchGroups()  { return Promise.resolve([...groupStore]); }
-function apiFetchInvites() { return Promise.resolve([...DUMMY_INVITES]); }
-
+function apiFetchGroups() {
+    return fetch(`${API_BASE}/api/groups`, { headers: getAuthHeaders() }).then(r => r.json());
+}
+function apiFetchInvites() {
+    return fetch(`${API_BASE}/api/groups/invites`, { headers: getAuthHeaders() }).then(r => r.json());
+}
 function apiCreateGroup(name, desc, inviteEmail) {
-    const initials = name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
-    const newGroup = { id: String(Date.now()), name, initials, memberCount: 1, fileCount: 0, role: "Admin" };
-    groupStore.unshift(newGroup);
-    return Promise.resolve(newGroup);
-    // changed upon intigration 
+    return fetch(`${API_BASE}/api/groups`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ name, desc, inviteEmail }) }).then(r => r.json());
 }
-
 function apiAcceptInvite(inviteId) {
-    return Promise.resolve({ success: true });
-    // changed upon intigration 
+    return fetch(`${API_BASE}/api/groups/invites/${inviteId}/accept`, { method: "POST", headers: getAuthHeaders() }).then(r => r.json());
 }
-
 function apiDeclineInvite(inviteId) {
-    return Promise.resolve({ success: true });
-    // changed upon intigration
+    return fetch(`${API_BASE}/api/groups/invites/${inviteId}`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
 
 
@@ -123,7 +108,7 @@ async function declineInvite(inviteId) {
 }
 
 
-// creating group 
+// create group form toggle
 document.querySelector("#create_group_btn").addEventListener("click", () => {
     const form = document.querySelector("#create_group_form");
     form.style.display = form.style.display === "none" ? "block" : "none";
@@ -132,10 +117,10 @@ document.querySelector("#create_group_btn").addEventListener("click", () => {
 document.querySelector("#new_group").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name      = document.querySelector("#group_name").value.trim();
-    const desc      = document.querySelector("#group_desc").value.trim();
-    const invite    = document.querySelector("#invite_email").value.trim();
-    const msg       = document.querySelector("#create_group_msg");
+    const name   = document.querySelector("#group_name").value.trim();
+    const desc   = document.querySelector("#group_desc").value.trim();
+    const invite = document.querySelector("#invite_email").value.trim();
+    const msg    = document.querySelector("#create_group_msg");
 
     if (!name) {
         msg.textContent = "Group name is required.";
@@ -161,7 +146,7 @@ document.querySelector("#new_group").addEventListener("submit", async (e) => {
 });
 
 
-// init for this page 
+// init for this page
 async function init() {
     initSidebar();
     initSearch();

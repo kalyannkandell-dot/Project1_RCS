@@ -46,18 +46,9 @@ if (!token) {
 }
 
 async function resetPassword(token, password) {
-    // --- swap this block for real fetch when backend is ready ---
-    // const res = await fetch('/api/auth/reset-password', {
-    //     method:  'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body:    JSON.stringify({ token, password })
-    // });
-    // if (!res.ok) {
-    //     const err = await res.json();
-    //     throw new Error(err.message || 'Reset failed.');
-    // }
-    // return await res.json();
-    return await API.handelresetPassword(token, password);
+    const res = await fetch(`${API_BASE}/api/auth/reset-password`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, password }) });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Reset failed."); }
+    return await res.json();
 }
 
 
