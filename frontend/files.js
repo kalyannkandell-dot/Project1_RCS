@@ -25,6 +25,7 @@ function classifyFile(name) {
     if (["pdf"].includes(ext)) return "pdf";
     if (["jpg","jpeg","png","gif","webp"].includes(ext)) return "image";
     if (["doc","docx","txt","xls","xlsx","csv"].includes(ext)) return "doc";
+    if (["js","html"].includes(ext)) return "invalid";
     return "other";
 }
 
@@ -101,6 +102,10 @@ async function loadStorage() {
 // ========== UPLOAD ==========
 async function uploadFile(file) {
     toast(`Uploading ${file.name}…`);
+      if(classifyFile(file.name) === 'invalid'){
+            toast('invalid file format');
+            return ;
+        }
     try {
         const uploaded = await apiUploadFile(file);
         toast(`${uploaded.name} uploaded!`, "success");
