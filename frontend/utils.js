@@ -1,4 +1,4 @@
-const API_BASE ="http://192.168.1.7:3000"; 
+const API_BASE ="http://192.168.1.69:3000"; 
 // ─── CHANGE API_BASE FOR DIFFERENT NETWORKS ───────────────────────────────────
 // 1. Run this in terminal to get your IP:
 //    ipconfig getifaddr en0
@@ -20,6 +20,17 @@ function formatSize(bytes) {
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
     if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + " MB";
     return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+}
+
+async function downloadFile(id, name) {
+    const res = await fetch(`${API_BASE}/api/files/${id}/download`, { headers: getAuthHeaders() })
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = name
+    a.click()
+    URL.revokeObjectURL(url)
 }
 
 function timeAgo(timestamp) {

@@ -125,18 +125,15 @@ async function removeMember(memberId) {
     }
 }
 
-
-// load group files
+// load group file 
 async function loadGroupFiles() {
     const container = document.querySelector("#group_files_list");
     try {
         const files = await apiFetchGroupFiles();
-
         if (files.length === 0) {
             container.innerHTML = "<p>No files yet.</p>";
             return;
         }
-
         container.innerHTML = files.map(f => {
             const uploadedBy = f.addedByName || f.addedByEmail;
             return `
@@ -147,12 +144,16 @@ async function loadGroupFiles() {
                         <small>${formatSize(f.size)} · Uploaded by ${uploadedBy} · ${timeAgo(f.addedAt)}</small>
                     </div>
                     <div class="file_btns">
-                        <a href="${API_BASE}/api/files/${f.id}/download" class="btn" download="${f.name}">Download</a>
+                        <button class="btn btn_download" data-id="${f.id}" data-name="${f.name}">Download</button>
                         <button class="btn btn_danger" onclick="deleteGroupFile('${f.id}')">Delete</button>
                     </div>
                 </div>
             `;
         }).join("");
+
+        container.querySelectorAll(".btn_download").forEach(btn => {
+            btn.addEventListener("click", () => downloadFile(btn.dataset.id, btn.dataset.name))
+        });
 
     } catch (err) {
         console.error("Failed to load group files:", err);
