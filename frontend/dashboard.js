@@ -8,6 +8,7 @@ const API = {
     async getRecentFiles() { return await fetch(`${API_BASE}/api/files/recent?limit=4`, { headers: getAuthHeaders() }).then(r => r.json()); },
     async getGroups()      { return await fetch(`${API_BASE}/api/groups`, { headers: getAuthHeaders() }).then(r => r.json()); },
 };
+
 function apiShareWithPerson(fileId, email) {
     return fetch(`${API_BASE}/api/files/${fileId}/share/person`, { 
         method: "POST", 
@@ -19,12 +20,22 @@ function apiShareWithPerson(fileId, email) {
         return data
     })
 }
+
 function apiShareWithGroup(fileId, groupId) {
     return fetch(`${API_BASE}/api/groups/${groupId}/files/${fileId}`, { method: "POST", headers: getAuthHeaders() }).then(r => r.json());
 }
 
+async function downloadFile(id, name) {
+    const res = await fetch(`${API_BASE}/api/files/${id}/download`, { headers: getAuthHeaders() })
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = name
+    a.click()
+    URL.revokeObjectURL(url)
+}
 
-// ========== LOAD STORAGE ==========
 async function loadStorage() {
     try {
         const data = await API.getStorage();
@@ -39,8 +50,6 @@ async function loadStorage() {
     }
 }
 
-
-// ========== LOAD STATS ==========
 async function loadStats() {
     try {
         const data = await API.getStats();
@@ -53,8 +62,6 @@ async function loadStats() {
     }
 }
 
-
-// ========== LOAD RECENT FILES ==========
 async function loadRecentFiles() {
     const container = document.querySelector("#recent_files_list");
     try {
@@ -73,11 +80,15 @@ async function loadRecentFiles() {
                     <small>${formatSize(file.size)} · ${timeAgo(file.createdAt)}</small>
                 </div>
                 <div class="file_btns">
-                    <a href="${API_BASE}/api/files/${file.id}/download" class="btn">Download</a>
+                    <button class="btn btn_download" data-id="${file.id}" data-name="${file.name}">Download</button>
                     <button class="btn btn_share" data-id="${file.id}" data-name="${file.name}">Share</button>
                 </div>
             </div>
         `).join("");
+
+        container.querySelectorAll(".btn_download").forEach(btn => {
+            btn.addEventListener("click", () => downloadFile(btn.dataset.id, btn.dataset.name))
+        });
 
         container.querySelectorAll(".btn_share").forEach(btn => {
             btn.addEventListener("click", () => openShareModal(btn.dataset.id, btn.dataset.name));
@@ -89,8 +100,6 @@ async function loadRecentFiles() {
     }
 }
 
-
-// ========== LOAD GROUPS ==========
 async function loadGroups() {
     const container = document.querySelector("#groups_list");
     try {
@@ -120,19 +129,15 @@ async function loadGroups() {
     }
 }
 
-
-// ========== SHARE MODAL ==========
 let activeShareFileId = null;
 
 function openShareModal(fileId, fileName) {
     activeShareFileId = fileId;
     document.querySelector("#modal_title").textContent = `Share: ${fileName}`;
-
     document.querySelector("#share_step_1").classList.remove("hidden");
     document.querySelector("#share_step_person").classList.add("hidden");
     document.querySelector("#share_step_group").classList.add("hidden");
     document.querySelector("#share_email").value = "";
-
     document.querySelector("#share_modal").classList.add("active");
 }
 
@@ -196,7 +201,7 @@ document.querySelector("#share_to_group").addEventListener("click", async () => 
     }
 });
 
-document.querySelector("#share_send_person").addEventListener("click", async () => {
+async function handleShareSend() {
     const email = document.querySelector("#share_email").value.trim();
     if (!email) {
         toast("Please enter an email address.");
@@ -210,27 +215,16 @@ document.querySelector("#share_send_person").addEventListener("click", async () 
         console.error("Share to person failed:", err);
         toast(err.message || "Could not share file.");
     }
-});
+}
+
+document.querySelector("#share_send_person").addEventListener("click", handleShareSend);
+
 document.querySelector("#share_email").addEventListener("keydown", async (e) => {
     if (e.key !== "Enter") return;
     e.preventDefault();
-    const email = document.querySelector("#share_email").value.trim();
-    if (!email) {
-        toast("Please enter an email address.");
-        return;
-    }
-    try {
-        await apiShareWithPerson(activeShareFileId, email);
-        toast(`File shared with ${email}!`, "success");
-        closeShareModal();
-    } catch (err) {
-        console.error("Share to person failed:", err);
-        toast(err.message || "Could not share file.");
-    }
+    handleShareSend();
 });
 
-
-// ========== INIT ==========
 async function init() {
     initSidebar();
     initSearch();

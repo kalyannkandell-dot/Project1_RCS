@@ -152,7 +152,7 @@ document.querySelector("#change_password").addEventListener("submit", async (e) 
     }
 });
 document.querySelector("#logout_button").addEventListener("click", () => {
-    localStorage.removeItem('hc_token')
+
     window.location.href = "index.html"
 })
 

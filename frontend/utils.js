@@ -1,4 +1,4 @@
-const API_BASE ="http://192.168.1.2:3000"; 
+const API_BASE ="http://192.168.1.7:3000"; 
 // ─── CHANGE API_BASE FOR DIFFERENT NETWORKS ───────────────────────────────────
 // 1. Run this in terminal to get your IP:
 //    ipconfig getifaddr en0
