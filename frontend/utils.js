@@ -1,5 +1,18 @@
-const API_BASE = "http://localhost:3000"; 
-
+const API_BASE ="http://192.168.1.2:3000"; 
+// ─── CHANGE API_BASE FOR DIFFERENT NETWORKS ───────────────────────────────────
+// 1. Run this in terminal to get your IP:
+//    ipconfig getifaddr en0
+//
+// 2. Replace the IP above with your new IP:
+//    const API_BASE = "http://<YOUR_IP>:3000"
+//
+// 3. Open frontend on any device on same WiFi:
+//    http://<YOUR_IP>:5500/frontend/login.html
+//
+// Example:
+//    const API_BASE = "http://192.168.1.5:3000"
+//    http://192.168.1.5:5500/frontend/login.html
+// ─────────────────────────────────────────────────────────────────────────────
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function formatSize(bytes) {

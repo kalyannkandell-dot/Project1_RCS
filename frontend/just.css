@@ -684,3 +684,102 @@ header .header_right a {
 .share_modal_box {
     background: rgb(60, 98, 132);  /* solid, matches your body color */
 }
+.dash_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 600px) {
+    .dash_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .dash_card {
+        font-size: 1rem;
+    }
+    .generic_form {
+        font-size: 1rem;
+    }
+    .auth_box {
+        font-size: 1rem;
+    }
+    .btn {
+        font-size: 1rem;
+    }
+    header h1 {
+        font-size: 1.5rem;
+    }
+    #h1_1 {
+        font-size: 2rem;
+    }
+    .text_1 {
+        font-size: 1.2rem;
+    }
+    .file_btns {
+        flex-wrap: wrap;
+    }
+}
+@media (max-width: 600px) {
+    .group_card .file_meta strong,
+    .dash_section_head h2,
+    .share_modal_head h2,
+    .group_header h2 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
+
+    .search_dropdown {
+        width: 200px;
+    }
+
+    .file_btns .btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+}
+#modal_title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+@media (max-width: 768px) {
+    header h1 {
+        display: none;
+    }
+
+    form[role="search"] input,
+    #search {
+        width: 120px;
+    }
+
+    #hamburger {
+        height: 50%;
+    }
+
+    .head_logo {
+        height: 60%;
+    }
+
+    .dash_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dash_main {
+        padding: 1rem 3%;
+    }
+
+    .file_btns {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+}

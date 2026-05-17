@@ -9,7 +9,15 @@ const API = {
     async getGroups()      { return await fetch(`${API_BASE}/api/groups`, { headers: getAuthHeaders() }).then(r => r.json()); },
 };
 function apiShareWithPerson(fileId, email) {
-    return fetch(`${API_BASE}/api/files/${fileId}/share/person`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ email }) }).then(r => r.json());
+    return fetch(`${API_BASE}/api/files/${fileId}/share/person`, { 
+        method: "POST", 
+        headers: getAuthHeaders(), 
+        body: JSON.stringify({ email }) 
+    }).then(async r => {
+        const data = await r.json()
+        if (!r.ok) throw new Error(data.error || data.message)
+        return data
+    })
 }
 function apiShareWithGroup(fileId, groupId) {
     return fetch(`${API_BASE}/api/groups/${groupId}/files/${fileId}`, { method: "POST", headers: getAuthHeaders() }).then(r => r.json());
@@ -200,7 +208,24 @@ document.querySelector("#share_send_person").addEventListener("click", async () 
         closeShareModal();
     } catch (err) {
         console.error("Share to person failed:", err);
-        toast("Could not share file.");
+        toast(err.message || "Could not share file.");
+    }
+});
+document.querySelector("#share_email").addEventListener("keydown", async (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const email = document.querySelector("#share_email").value.trim();
+    if (!email) {
+        toast("Please enter an email address.");
+        return;
+    }
+    try {
+        await apiShareWithPerson(activeShareFileId, email);
+        toast(`File shared with ${email}!`, "success");
+        closeShareModal();
+    } catch (err) {
+        console.error("Share to person failed:", err);
+        toast(err.message || "Could not share file.");
     }
 });
 
