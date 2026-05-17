@@ -62,7 +62,7 @@ function toast(msg, type = 'error') {
         el.id = 'hc_toast';
         Object.assign(el.style, {
             position: 'fixed', bottom: '1.5rem', right: '1.5rem', zIndex: 9999,
-            padding: '0.65rem 1.1rem', borderRadius: '4px', fontSize: '0.875rem',
+            padding: '0.65rem 1.1rem', borderRadius: '4px', fontSize: '1.25rem',
             fontWeight: 'bold', boxShadow: '5px 5px 0 0 black',
             transition: 'opacity 0.3s', opacity: '0', pointerEvents: 'none',
             fontFamily: "'Courier New', monospace",
