@@ -17,7 +17,8 @@ A RESTful backend for Hamro Cloud, a remote cloud storage platform. Built with N
 - **cors** — cross-origin requests
 - **morgan** — request logging
 - **dotenv** — environment variables
-
+- **file-type** — byte-level file validation (prevents spoofed file extensions)
+- **xss** — input sanitisation (prevents cross-site scripting attacks)
 ## Setup
 
 ### Install dependencies

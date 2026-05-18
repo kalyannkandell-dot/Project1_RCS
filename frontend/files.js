@@ -14,13 +14,26 @@ function apiFetchGroups() {
 function apiUploadFile(file) {
     const formData = new FormData();
     formData.append("file", file);
-    return fetch(`${API_BASE}/api/files`, { method: "POST", headers: getAuthHeadersNoContent(), body: formData }).then(r => r.json());
+    return fetch(`${API_BASE}/api/files`, { method: "POST", headers: getAuthHeadersNoContent(), body: formData })
+        .then(async r => {
+            const data = await r.json();
+            if (!r.ok) throw new Error(data.error || "Upload failed.");
+            return data;
+        });
 }
 function apiDeleteFile(id) {
     return fetch(`${API_BASE}/api/files/${id}`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
 function apiShareWithPerson(fileId, email) {
-    return fetch(`${API_BASE}/api/files/${fileId}/share/person`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ email }) }).then(r => r.json());
+    return fetch(`${API_BASE}/api/files/${fileId}/share/person`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ email })
+    }).then(async r => {
+        const data = await r.json();
+        if (!r.ok) throw new Error(data.error || "Share failed.");
+        return data;
+    });
 }
 function apiShareWithGroup(fileId, groupId) {
     return fetch(`${API_BASE}/api/groups/${groupId}/files/${fileId}`, { method: "POST", headers: getAuthHeaders() }).then(r => r.json());
@@ -136,7 +149,8 @@ async function uploadFile(file) {
 async function handleDelete(e) {
     const id   = e.target.dataset.id;
     const file = allFiles.find(f => String(f.id) === String(id));
-    if (!confirm(`Delete "${file?.name}"?`)) return;
+    // old
+if (!await showConfirm(`Delete "${file?.name}"?`)) return;
     try {
         await apiDeleteFile(id);
         toast(`"${file?.name}" deleted.`, "success");
@@ -236,7 +250,7 @@ document.querySelector("#share_send_person").addEventListener("click", async () 
         closeShareModal();
     } catch (err) {
         console.error("Share to person failed:", err);
-        toast("Could not share file.");
+        toast(err.message || "Could not share file.");
     }
 });
 

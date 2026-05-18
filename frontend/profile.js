@@ -3,14 +3,20 @@ if (!localStorage.getItem("hc_token")) {
 }
 
 const API = {
-    async getProfile() {
-        const res = await fetch(`${API_BASE}/api/user/me`, { headers: getAuthHeaders() });
-        return await res.json();
-    },
-    async updateProfile(fullName, email) {
-        const res = await fetch(`${API_BASE}/api/user/update`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ fullName, email }) });
-        return await res.json();
-    },
+ async getProfile() {
+    const res = await fetch(`${API_BASE}/api/user/me`, { headers: getAuthHeaders() });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Could not load profile."); }
+    return await res.json();
+},
+async updateProfile(fullName) {
+    const res = await fetch(`${API_BASE}/api/user/update`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ fullName })
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Update failed."); }
+    return await res.json();
+},
    async changePassword(currentPassword, newPassword) {
     const res = await fetch(`${API_BASE}/api/auth/change-password`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify({ currentPassword, newPassword }) });
     return await res.json();
@@ -35,7 +41,7 @@ async function loadProfile() {
         document.querySelector("#profile_email").textContent = data.email;
         document.querySelector("#profile_since").textContent = "Member since " + new Date(data.createdAt * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
         document.querySelector("#full_name").value = data.fullName;
-        document.querySelector("#email").value = data.email;
+    
 
         if (data.avatarPath) {
             document.querySelector("#profile_pic_lg").src = `${API_BASE}/${data.avatarPath}`
@@ -84,22 +90,21 @@ document.querySelector("#pic_input").addEventListener("change", async (e) => {
         toast("Could not upload photo.")
     }
 });
-
+///////////////////////////////
 document.querySelector("#update_profile").addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const fullName = document.querySelector("#full_name").value.trim();
-    const email    = document.querySelector("#email").value.trim();
     const msg      = document.querySelector("#update_msg");
 
-    if (!fullName || !email) {
+    if (!fullName) {
         msg.textContent = "Please fill in all fields.";
         msg.style.color = "#cc0000";
         return;
     }
 
     try {
-        await API.updateProfile(fullName, email);
+        await API.updateProfile(fullName);
         msg.textContent = "Changes saved successfully.";
         msg.style.color = "green";
         document.querySelector("#profile_name").textContent = fullName;
@@ -111,7 +116,13 @@ document.querySelector("#update_profile").addEventListener("submit", async (e) =
         toast("Could not save changes.");
     }
 });
-
+///////////////////////////////////////
+document.querySelector("#toggle_password_btn").addEventListener("click", () => {
+    const wrap = document.querySelector("#password_form_wrap");
+    const btn  = document.querySelector("#toggle_password_btn");
+    const open = wrap.classList.toggle("open");
+    btn.textContent = open ? "Cancel" : "Change";
+});
 document.querySelector("#change_password").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -138,26 +149,29 @@ document.querySelector("#change_password").addEventListener("submit", async (e) 
         return;
     }
 
-    try {
-        await API.changePassword(currentPass, newPass);
-        msg.textContent = "Password updated successfully.";
-        msg.style.color = "green";
-        document.querySelector("#change_password").reset();
-        toast("Password changed!", "success");
-    } catch (err) {
-        console.error("Password change failed:", err);
-        msg.textContent = "Current password is wrong.";
-        msg.style.color = "#cc0000";
-        toast("Could not change password.");
-    }
+try {
+    await API.changePassword(currentPass, newPass);
+    msg.textContent = "Password updated successfully.";
+    msg.style.color = "green";
+    document.querySelector("#change_password").reset();
+    document.querySelector("#password_form_wrap").classList.remove("open");
+    document.querySelector("#toggle_password_btn").textContent = "Change";
+    toast("Password changed!", "success");
+} catch (err) {
+    console.error("Password change failed:", err);
+    msg.textContent = "Current password is wrong.";
+    msg.style.color = "#cc0000";
+    toast("Could not change password.");
+}
 });
-document.querySelector("#logout_button").addEventListener("click", () => {
-
-    window.location.href = "index.html"
-})
+document.querySelector("#logout_button").addEventListener("click", async () => {
+    if (!await showConfirm("Are you sure you want to log out?", "Log Out")) return;
+    localStorage.removeItem("hc_token");
+    window.location.href = "index.html";
+});
 
 document.querySelector("#delete_account_btn").addEventListener("click", async () => {
-    if (!confirm("Are you sure? This will permanently delete your account and all files. This cannot be undone.")) return;
+    if (!await showConfirm("Are you sure? This will permanently delete your account and all files. This cannot be undone.", "Delete Account")) return;
     try {
         await API.deleteAccount();
         window.location.href = "index.html";

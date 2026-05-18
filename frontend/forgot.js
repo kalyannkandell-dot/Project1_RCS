@@ -35,10 +35,22 @@ document.querySelector('#forgot_submit').addEventListener('submit', async (e) =>
     const email = document.querySelector('#email').value.trim();
     const btn   = document.querySelector('#auth_button');
 
-    if (!email) {
-        toast('Please enter your email.');
+    if(!await checkEmailExists(email)){
+        toast('Email not registered')
         return;
     }
+
+    if (!email) {
+        toast('Please enter your email.');
+
+        return;
+    }
+    if(!isEmail(email)){
+        toast('email is incorrect');
+        return;
+    }
+
+
 
     const originalText = btn.textContent;
     btn.textContent = 'Sending…';

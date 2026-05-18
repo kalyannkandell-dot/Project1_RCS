@@ -1,3 +1,74 @@
+/* CSS Variables — Light Mode */
+:root {
+    --bg-body: rgb(60, 98, 132);
+    --bg-card: rgba(23, 178, 221, 0.479);
+    --bg-sidebar: rgb(100, 100, 180);
+    --bg-sidebar-item: rgb(60, 98, 132);
+    --bg-header: rgb(100, 100, 180);
+    --bg-modal: rgb(60, 98, 132);
+    --bg-confirm: rgb(60, 98, 132);
+    --bg-share-modal: rgb(60, 98, 132);
+    --border-color: rgb(100, 100, 180);
+    --border-divider: #1d0384;
+    --text-main: #000;
+    --text-white: white;
+    --text-link: rgb(1, 2, 2);
+    --text-auth-title: rgb(1, 2, 2);
+    --text-shadow-auth: rgb(100, 100, 180);
+    --btn-primary: #0066cc;
+    --btn-primary-hover: #0052a3;
+    --btn-danger: #cc0000;
+    --group-avatar-bg: rgb(100, 100, 180);
+    --storage-fill: #0066cc;
+    --filter-active-bg: rgb(100, 100, 180);
+    --tab-active-bg: rgb(100, 100, 180);
+    --search-border: #ccc;
+    --search-dropdown-bg: rgba(23, 178, 221, 0.95);
+    --search-item-hover: rgb(100, 100, 180);
+    --overlay: rgba(0,0,0,0.5);
+    --storage-track: rgba(0,0,0,0.15);
+    --hero-gradient: linear-gradient(to right, rgba(0,0,0,0) 0%, rgb(60, 98, 132) 65%);
+    --box-shadow-hover: 10px 10px 0px 0px #000;
+    --box-shadow-sm: 5px 5px 0 0 black;
+    --hamburger-bg: rgb(60, 98, 132);
+    --profile-border: rgb(100, 100, 180);
+}
+
+[data-theme="dark"] {
+    --bg-body: rgb(18, 28, 38);
+    --bg-card: rgba(10, 60, 90, 0.55);
+    --bg-sidebar: rgb(30, 30, 70);
+    --bg-sidebar-item: rgb(18, 28, 38);
+    --bg-header: rgb(30, 30, 70);
+    --bg-modal: rgb(18, 28, 38);
+    --bg-confirm: rgb(18, 28, 38);
+    --bg-share-modal: rgb(18, 28, 38);
+    --border-color: rgb(70, 70, 140);
+    --border-divider: #4040a0;
+    --text-main: #e8e8f0;
+    --text-white: #e8e8f0;
+    --text-link: #c0c8e0;
+    --text-auth-title: #e8e8f0;
+    --text-shadow-auth: rgb(70, 70, 140);
+    --btn-primary: #1a7fd4;
+    --btn-primary-hover: #1568b0;
+    --btn-danger: #e03030;
+    --group-avatar-bg: rgb(40, 40, 100);
+    --storage-fill: #1a7fd4;
+    --filter-active-bg: rgb(50, 50, 120);
+    --tab-active-bg: rgb(50, 50, 120);
+    --search-border: #444466;
+    --search-dropdown-bg: rgba(20, 50, 80, 0.97);
+    --search-item-hover: rgb(50, 50, 120);
+    --overlay: rgba(0,0,0,0.72);
+    --storage-track: rgba(255,255,255,0.1);
+    --hero-gradient: linear-gradient(to right, rgba(0,0,0,0) 0%, rgb(18, 28, 38) 65%);
+    --box-shadow-hover: 10px 10px 0px 0px rgba(255,255,255,0.15);
+    --box-shadow-sm: 5px 5px 0 0 rgba(255,255,255,0.15);
+    --hamburger-bg: rgb(18, 28, 38);
+    --profile-border: rgb(70, 70, 140);
+}
+
 /* all */
 * {
     margin: 0;
@@ -6,9 +77,9 @@
 }
 body {
     min-height: 100vh;
-    background-color: rgb(60, 98, 132);
+    background-color: var(--bg-body);
     font-family: 'Courier New', monospace;
-    color: #000;         
+    color: var(--text-main);         
     font-weight: 500;     
     font-size: 1rem;
 }
@@ -17,26 +88,23 @@ body {
 }
 .floting_item:hover {
     transform: scale(1.05);
-    box-shadow: 5px 5px 0 0 black;
+    box-shadow: var(--box-shadow-sm);
 }
-
-
-
 
 
 /* index.html */
 #h1_1 {
     font-size: 3rem;
-    color: rgb(0, 0, 0);
+    color: var(--text-main);
 }
 .text_1 {
     font-size: 2rem;
-    color: rgb(0, 0, 0);
+    color: var(--text-main);
     text-shadow: 1px 1px 0px black;
 }
 .button-group {
-    background: rgba(23, 178, 221, 0.479);
-    border: 2px solid rgb(100, 100, 180);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
     width: 400px;
     max-width: 80%;
     aspect-ratio: 4 / 3;
@@ -48,14 +116,14 @@ body {
     justify-content: space-evenly;
 }
 .button-group:hover {
-    box-shadow: 10px 10px 0px 0px #000;
+    box-shadow: var(--box-shadow-hover);
     transform: scale(1.05);
 }
 .btn {
     display: inline-block;
-    color: #000;
+    color: var(--text-main);
     padding: 6px 14px;
-    border: 2px solid rgb(100, 100, 180);
+    border: 2px solid var(--border-color);
     text-align: center;
     font-size: 2rem;
     text-decoration: none;
@@ -67,11 +135,11 @@ body {
 }
 
 .btn:hover {
-    box-shadow: 5px 5px 0 0 black;
+    box-shadow: var(--box-shadow-sm);
     transform: scale(1.05);
 }
 .hero {
-    background-image: linear-gradient(to right, rgba(0,0,0,0) 0%, rgb(60, 98, 132) 65%), url('images/landing-bg.jpg');
+    background-image: var(--hero-gradient), url('images/landing-bg.jpg');
     background-size: cover;
     background-position: center;
     height: 100vh;
@@ -107,10 +175,10 @@ main.center {
 
 /* register.html , login.html, forgot.html, reset.html */
 .auth_box {
-    border: 2px solid rgb(100, 100, 180);
+    border: 2px solid var(--border-color);
     width: 90%;
     max-width: 400px;
-    background: rgba(23, 178, 221, 0.479);
+    background: var(--bg-card);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
     border-radius: 2%;
     display: flex;
@@ -122,14 +190,14 @@ main.center {
 }
 
 .auth_box:hover {
-    box-shadow: 10px 10px 0px 0px #000;
+    box-shadow: var(--box-shadow-hover);
     transform: scale(1.05);
 }
 .auth_title {
     text-align: center;
     font-size: 2rem;
-    color: rgb(1, 2, 2);
-    text-shadow: 2px 0px 3px rgb(100, 100, 180);
+    color: var(--text-auth-title);
+    text-shadow: 2px 0px 3px var(--text-shadow-auth);
 }
 .auth_subtitle {
     text-align: center;
@@ -142,15 +210,15 @@ main.center {
     height: 40px;
     width: 100%;
     padding: 8px;
-    border: 1px solid rgb(100, 100, 180);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-family: 'Courier New', monospace;
 }
 #auth_button {
     width: 100%;
     height: 40px;
-    background-color: #0066cc;
-    color: white;
+    background-color: var(--btn-primary);
+    color: var(--text-white);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -160,7 +228,7 @@ main.center {
 }
 
 #auth_button:hover {
-    background-color: #0052a3;
+    background-color: var(--btn-primary-hover);
 }
 .auth_footer {
     font-size: 0.8rem;
@@ -180,14 +248,14 @@ main.center {
 .divider::after {
     content: "";
     height: 1px;
-    background-color: #1d0384;
+    background-color: var(--border-divider);
     flex: 1;
 }
 
 /* login.html */
 #forgot_link {
     font-size: 0.8rem;
-    color: rgb(1, 2, 2);
+    color: var(--text-link);
     text-decoration: none;
 }
 
@@ -201,7 +269,7 @@ main.center {
 header {
     width: 100%;
     height: 10vh;
-    background: rgb(100, 100, 180);
+    background: var(--bg-header);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -241,14 +309,14 @@ header div {
 }
 
 #hamburger div {
-    background-color: rgb(60, 98, 132);
+    background-color: var(--hamburger-bg);
     border: 2px solid black;
 }
 
 #search {
     width: 200px;
     padding: 6px 12px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--search-border);
     border-radius: 4px;
     font-size: 0.9rem;
     font-family: 'Courier New', monospace;
@@ -259,7 +327,7 @@ header div {
     right: 0;        
     left: auto;      
     width: 300px;
-    background: rgba(23, 178, 221, 0.95);  
+    background: var(--search-dropdown-bg);  
     border: 2px solid black;
     z-index: 999;
     max-height: 300px;
@@ -272,13 +340,13 @@ header div {
     align-items: center;
     gap: 0.75rem;
     cursor: pointer;
-    border-bottom: 1px solid rgb(100, 100, 180);
+    border-bottom: 1px solid var(--border-color);
     font-size: 1rem;        
     font-weight: bold;
 }
 
 .search_item:hover {
-    background: rgb(100, 100, 180);
+    background: var(--search-item-hover);
 }
 #avatar {
     height: 80%;
@@ -303,7 +371,7 @@ header .header_right a {
     transform-origin: top left;
     transition: transform .3s ease;
     height: 100vh;
-    background-color: rgb(100, 100, 180);
+    background-color: var(--bg-sidebar);
     width: 15%;
     min-width: 200px;
     pointer-events: none;
@@ -330,13 +398,13 @@ header .header_right a {
     width: 70%;
     border: 2px solid black;
     padding: .4em .6em;
-    background-color: rgb(60, 98, 132);
+    background-color: var(--bg-sidebar-item);
    
 }
 
 #sidebar ul li a {
     text-decoration: none;
-    color: #000;
+    color: var(--text-main);
     font-weight: bold;
     width: 100%;
     display: flex;
@@ -362,8 +430,8 @@ header .header_right a {
     padding: 8px 24px;
 }
 .dash_card {
-    background: rgba(23, 178, 221, 0.479);
-    border: 2px solid rgb(100, 100, 180);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
     border-radius: 2%;
     padding: 1rem 1.5rem;
     font-size: 2rem;
@@ -375,7 +443,7 @@ header .header_right a {
 .storage_bar {
     width: 100%;
     height: 10px;
-    background: rgba(0,0,0,0.15);
+    background: var(--storage-track);
     border-radius: 6px;
     margin-top: 0.5rem;
     overflow: hidden;
@@ -383,7 +451,7 @@ header .header_right a {
 
 .storage_fill {
     height: 100%;
-    background: #0066cc;
+    background: var(--storage-fill);
     border-radius: 6px;
 }
 .dash_grid {
@@ -413,7 +481,7 @@ header .header_right a {
 
 .dash_section_head a {
     font-size: 0.85rem;
-    color: #000;
+    color: var(--text-main);
     text-decoration: none;
     font-weight: bold;
 }
@@ -456,14 +524,14 @@ header .header_right a {
     align-items: center;
     gap: 1rem;
     text-decoration: none;
-    color: #000;
+    color: var(--text-main);
     padding: 0.75rem 1rem;
 }
 
 .group_avatar {
     width: 45px;
     height: 45px;
-    background: rgb(100, 100, 180);
+    background: var(--group-avatar-bg);
     border: 2px solid black;
     display: flex;
     align-items: center;
@@ -483,7 +551,7 @@ header .header_right a {
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    color: #000;
+    color: var(--text-main);
     font-weight: bold;
     font-size: 1rem;
     padding: 1.5rem 1rem;
@@ -503,7 +571,7 @@ header .header_right a {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    border: 2px solid rgb(100, 100, 180);
+    border: 2px solid var(--profile-border);
     flex-shrink: 0;
 }
 
@@ -519,19 +587,19 @@ header .header_right a {
     height: 40px;
 }
 .btn_danger {
-    border-color: #cc0000;
-    color: #cc0000;
+    border-color: var(--btn-danger);
+    color: var(--btn-danger);
 }
 
 .btn_danger:hover {
-    background: #cc0000;
+    background: var(--btn-danger);
     color: #fff;
-    box-shadow: 5px 5px 0 0 black;
+    box-shadow: var(--box-shadow-sm);
 }
 
 /* file.html */
 .drop_zone {
-    border: 2px dashed rgb(100, 100, 180);
+    border: 2px dashed var(--border-color);
     padding: 2rem;
     text-align: center;
     display: flex;
@@ -548,7 +616,7 @@ header .header_right a {
 
 .filter_btn {
     padding: 6px 16px;
-    border: 2px solid rgb(100, 100, 180);
+    border: 2px solid var(--border-color);
     background: none;
     cursor: pointer;
     font-family: 'Courier New', monospace;
@@ -558,15 +626,15 @@ header .header_right a {
 
 .filter_btn.active,
 .filter_btn:hover {
-    background: rgb(100, 100, 180);
-    color: #000;
+    background: var(--filter-active-bg);
+    color: var(--text-main);
 }
 
 /* group.html */
 .group_badge {
     font-size: 0.75rem;
     font-weight: bold;
-    border: 1px solid rgb(100, 100, 180);
+    border: 1px solid var(--border-color);
     padding: 3px 8px;
     margin-left: auto;
     flex-shrink: 0;
@@ -594,7 +662,7 @@ header .header_right a {
 
 .tab_btn {
     padding: 10px 24px;
-    border: 2px solid rgb(100, 100, 180);
+    border: 2px solid var(--border-color);
     border-right: none;
     background: none;
     cursor: pointer;
@@ -604,13 +672,13 @@ header .header_right a {
 }
 
 .tab_btn:last-child {
-    border-right: 2px solid rgb(100, 100, 180);
+    border-right: 2px solid var(--border-color);
 }
 
 .tab_btn.active,
 .tab_btn:hover {
-    background: rgb(100, 100, 180);
-    color: #000;
+    background: var(--tab-active-bg);
+    color: var(--text-main);
 }
 
 
@@ -622,7 +690,7 @@ header .header_right a {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: var(--overlay);
     z-index: 500;
     align-items: center;
     justify-content: center;
@@ -682,7 +750,7 @@ header .header_right a {
     display: none;
 }
 .share_modal_box {
-    background: rgb(60, 98, 132);  /* solid, matches your body color */
+    background: var(--bg-share-modal);
 }
 .dash_grid {
     display: grid;
@@ -782,4 +850,56 @@ header .header_right a {
         font-size: 0.75rem;
         padding: 4px 8px;
     }
+}
+/* confirm dialog */
+.confirm_dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--overlay);
+    z-index: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirm_box {
+    background: var(--bg-confirm);
+    border: 2px solid var(--border-color);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 350px;
+    width: 90%;
+}
+
+.confirm_msg {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.confirm_btns {
+    display: grid(1fr, 1fr);
+    gap: 1rem;
+    justify-content: flex-end;
+}
+#confirm_ok{
+ width: 45%;    
+}
+#password_form_wrap {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+    display: block !important;
+}
+
+#password_form_wrap.open {
+    max-height: 500px;
+}
+
+#delete_account_btn_cover{
+    border: 2px solid red;
 }

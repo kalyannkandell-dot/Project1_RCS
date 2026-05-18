@@ -160,4 +160,11 @@ router.post("/change-password", auth, (req, res) => {
   return res.json({ message: "Password changed successfully." });
 });
 
+router.get("/check-email", (req, res) => {
+    const { email } = req.query;
+    if (!email) return res.status(400).json({ error: "Email is required." });
+    const user = db.prepare("SELECT id FROM users WHERE email = ?").get(email);
+    return res.json({ exists: !!user });
+});
+
 module.exports = router;

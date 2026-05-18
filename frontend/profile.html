@@ -72,38 +72,36 @@
                     <label class="auth_label" for="full_name">Full Name</label>
                     <input type="text" id="full_name" class="auth_field" placeholder="Your name" required>
 
-                    <label class="auth_label" for="email" style="margin-top: 0.75rem;">Email</label>
-                    <input type="email" id="email" class="auth_field" placeholder="Your email" required>
+                    
 
                     <p id="update_msg" style="font-size:0.85rem; margin-top:0.5rem;"></p>
-                    <button type="submit" class="floting_item" id="auth_button" style="margin-top: 0.75rem;">Save Changes</button>
+                    <button type="submit" class="floting_item" id="auth_button" style="margin-top: 0.75rem;">Change Name</button>
                 </form>
             </div>
         </section>
 
         <!-- changing password -->
-        <section class="dash_section">
-            <h2>Change Password</h2>
-            <div class="dash_card">
-                <form id="change_password">
-                    <label class="auth_label" for="current_pass">Current Password</label>
-                    <input type="password" id="current_pass" class="auth_field" required>
+<section class="dash_section">
+    <h2>Change Password <button type="button" id="toggle_password_btn" class="btn" style="margin-left:1rem;">Change</button></h2>
+    <div id="password_form_wrap" >
+        <div class="dash_card">
+            <form id="change_password">
+                <label class="auth_label" for="current_pass">Current Password</label>
+                <input type="password" id="current_pass" class="auth_field" required>
 
-                    <label class="auth_label" for="new_pass" style="margin-top: 0.75rem;">New Password</label>
-                    <input type="password" id="new_pass" class="auth_field" required>
+                <label class="auth_label" for="new_pass" style="margin-top: 0.75rem;">New Password</label>
+                <input type="password" id="new_pass" class="auth_field" required>
 
-                    <label class="auth_label" for="confirm_pass" style="margin-top: 0.75rem;">Confirm New Password</label>
-                    <input type="password" id="confirm_pass" class="auth_field" required>
+                <label class="auth_label" for="confirm_pass" style="margin-top: 0.75rem;">Confirm New Password</label>
+                <input type="password" id="confirm_pass" class="auth_field" required>
 
-                    <p id="password_msg" style="font-size:0.85rem; margin-top:0.5rem;"></p>
-                    <button type="submit" class="floting_item" id="auth_button" style="margin-top: 0.75rem;">Update Password</button>
-                </form>
-            </div>
-        </section>
-
-        <!--danger zone-->
-        <section class="dash_section">
-            <h2>Danger Zone</h2>
+                <p id="password_msg" style="font-size:0.85rem; margin-top:0.5rem;"></p>
+                <button type="submit" class="floting_item" id="auth_button" style="margin-top: 0.75rem;">Update Password</button>
+            </form>
+        </div>
+    </div>
+</section>
+            
             <div class="dash_card danger_zone">
                 <div class="file_meta">
                     <strong>Log Out</strong>
@@ -111,7 +109,13 @@
                 </div>
                 <button class="btn btn_danger floting_item" id="logout_button">Log Out</button>
             </div>
-            <div class="dash_card danger_zone">
+            
+        </section>
+        <!--danger zone-->
+        <section class="dash_section">
+            <h2>Danger Zone</h2>
+            
+            <div class="dash_card danger_zone" id="delete_account_btn_cover">
                 <div class="file_meta">
                     <strong>Delete Account</strong>
                     <small>Permanently delete your account and all your files. This cannot be undone.</small>

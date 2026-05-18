@@ -4,7 +4,7 @@ const fs = require("fs");
 const multer = require("multer");
 const db = require("../db/database");
 const auth = require("../middleware/auth");
-
+const fileType = require("file-type");
 const router = express.Router();
 
 const STORAGE_LIMIT = 1073741824; // 1 GB in bytes
@@ -28,12 +28,25 @@ const upload = multer({
   storage: fileStorage,
   limits: { fileSize: STORAGE_LIMIT },
   fileFilter: (req, file, cb) => {
+    // check storage
     const user = db.prepare("SELECT storageUsed FROM users WHERE id = ?").get(req.user.id);
     if (user.storageUsed >= STORAGE_LIMIT) {
-      return cb(new Error("Storage limit reached. You have used your full 1 GB quota."));
+        return cb(new Error("Storage limit reached. You have used your full 1 GB quota."));
     }
+
+    // check extension
+    const ext = path.extname(file.originalname).replace(".", "").toLowerCase();
+    if (BLOCKED_EXTENSIONS.includes(ext)) {
+        return cb(new Error("This file type is not allowed."));
+    }
+
+    // check mimetype
+    if (!ALLOWED_MIMETYPES.includes(file.mimetype)) {
+        return cb(new Error("This file type is not allowed."));
+    }
+
     cb(null, true);
-  },
+},
 });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -179,20 +192,15 @@ router.post("/", (req, res) => {
   const groupId = createGroup();
 
   // Optionally invite someone by email
-  if (inviteEmail) {
+if (inviteEmail) {
     const target = db.prepare("SELECT id FROM users WHERE email = ?").get(inviteEmail);
-    if (target && target.id !== req.user.id) {
-      // Add directly as member if user exists
-      db.prepare(
-        "INSERT INTO group_members (groupId, userId, role) VALUES (?, ?, 'Member')"
-      ).run(groupId, target.id);
-    } else if (!target) {
-      // Record a pending invite for an unknown email
-      db.prepare(
-        "INSERT INTO invites (groupId, invitedEmail, invitedBy) VALUES (?, ?, ?)"
-      ).run(groupId, inviteEmail, req.user.id);
+    const alreadyMember = target ? getMembership(groupId, target.id) : null;
+    if (!alreadyMember) {
+        db.prepare(
+            "INSERT INTO invites (groupId, invitedEmail, invitedBy) VALUES (?, ?, ?)"
+        ).run(groupId, inviteEmail, req.user.id);
     }
-  }
+}
 
   const group = db.prepare("SELECT * FROM groups WHERE id = ?").get(groupId);
 
@@ -259,22 +267,14 @@ router.post("/:groupId/invite", (req, res) => {
 
   const target = db.prepare("SELECT id, email FROM users WHERE email = ?").get(email);
 
-  if (target) {
-    // User exists — add directly if not already a member
+ if (target) {
     const alreadyMember = getMembership(groupId, target.id);
     if (alreadyMember) {
-      return res.status(409).json({ error: "That user is already in this group." });
+        return res.status(409).json({ error: "That user is already in this group." });
     }
+}
 
-    db.prepare(
-      "INSERT INTO group_members (groupId, userId, role) VALUES (?, ?, 'Member')"
-    ).run(groupId, target.id);
-
-    return res.status(201).json({ message: "User added to group.", email });
-  }
-
-  // User doesn't exist — create a pending invite
-  const existing = db
+const existing = db
     .prepare(
       "SELECT id FROM invites WHERE groupId = ? AND invitedEmail = ? AND status = 'pending'"
     )
@@ -372,15 +372,23 @@ router.get("/:groupId/files", (req, res) => {
 router.post("/:groupId/files", (req, res) => {
   const { groupId } = req.params;
 
-  if (!requireMember(req, res, groupId)) return;
+if (!requireMember(req, res, groupId)) return;
 
-  upload.single("file")(req, res, (err) => {
+upload.single("file")(req, res, async (err) => {
     if (err) {
-      return res.status(400).json({ error: err.message });
+        return res.status(400).json({ error: err.message });
     }
 
     if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded." });
+        return res.status(400).json({ error: "No file uploaded." });
+    }
+
+    // byte-level check
+    const detected = await fileType.fromFile(req.file.path);
+    const BLOCKED = ["exe", "sh", "bat", "php", "js", "html"];
+    if (!detected || BLOCKED.includes(detected.ext)) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ error: "This file type is not allowed." });
     }
 
     const user = db.prepare("SELECT storageUsed FROM users WHERE id = ?").get(req.user.id);

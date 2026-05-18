@@ -1,4 +1,4 @@
-const API_BASE = "https://project1-rcs.onrender.com";
+const API_BASE = "http://127.0.0.1:3000";
 // ─── CHANGE API_BASE FOR DIFFERENT NETWORKS ───────────────────────────────────
 // 1. Run this in terminal to get your IP:
 //    ipconfig getifaddr en0
@@ -137,4 +137,44 @@ async function loadUserHeader() {
     } catch (err) {
         document.querySelector("#avatar").src = "images/profilepic.png";
     }
+}
+
+function isEmail(text) {
+  const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(text);
+}
+
+async function checkEmailExists(email) {
+    const res = await fetch(`${API_BASE}/api/auth/check-email?email=${encodeURIComponent(email)}`, {
+        headers: { "Content-Type": "application/json" }
+    });
+    if (!res.ok) throw new Error("Could not check email.");
+    const data = await res.json();
+    return data.exists; // true or false
+}
+function showConfirm(message) {
+    return new Promise((resolve) => {
+        const dialog = document.createElement("div");
+        dialog.className = "confirm_dialog";
+        dialog.innerHTML = `
+            <div class="confirm_box">
+                <p class="confirm_msg">${message}</p>
+                <div class="confirm_btns">
+                    <button class="btn" id="confirm_cancel">Cancel</button>
+                    <button class="btn btn_danger floting_item" id="confirm_ok">   OK   </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(dialog);
+
+        dialog.querySelector("#confirm_ok").addEventListener("click", () => {
+            dialog.remove();
+            resolve(true);
+        });
+
+        dialog.querySelector("#confirm_cancel").addEventListener("click", () => {
+            dialog.remove();
+            resolve(false);
+        });
+    });
 }

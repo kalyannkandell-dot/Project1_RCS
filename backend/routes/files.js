@@ -4,12 +4,26 @@ const fs = require("fs");
 const multer = require("multer");
 const db = require("../db/database");
 const auth = require("../middleware/auth");
+const fileType = require("file-type");
 
 const router = express.Router();
 
 const STORAGE_LIMIT = 1073741824; // 1 GB in bytes
 
 // ─── Multer — file uploads ────────────────────────────────────────────────────
+const BLOCKED_EXTENSIONS = ["js", "jsx", "ts", "html", "exe", "sh", "bat", "php", "py", "rb", "ps1", "cmd", "jar", "msi", "dll"];
+
+const ALLOWED_MIMETYPES = [
+    "image/jpeg", "image/png", "image/gif", "image/webp",
+    "application/pdf",
+    "text/plain",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/csv",
+    "application/zip",
+];
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -27,14 +41,26 @@ const fileStorage = multer.diskStorage({
 const upload = multer({
   storage: fileStorage,
   limits: { fileSize: STORAGE_LIMIT },
-  fileFilter: (req, file, cb) => {
-    // Check remaining storage before accepting
+fileFilter: (req, file, cb) => {
+    // check storage
     const user = db.prepare("SELECT storageUsed FROM users WHERE id = ?").get(req.user.id);
     if (user.storageUsed >= STORAGE_LIMIT) {
-      return cb(new Error("Storage limit reached. You have used your full 1 GB quota."));
+        return cb(new Error("Storage limit reached. You have used your full 1 GB quota."));
     }
+
+    // check extension
+    const ext = path.extname(file.originalname).replace(".", "").toLowerCase();
+    if (BLOCKED_EXTENSIONS.includes(ext)) {
+        return cb(new Error("This file type is not allowed."));
+    }
+
+    // check mimetype
+    if (!ALLOWED_MIMETYPES.includes(file.mimetype)) {
+        return cb(new Error("This file type is not allowed."));
+    }
+
     cb(null, true);
-  },
+},
 });
 
 // ─── All routes are protected ─────────────────────────────────────────────────

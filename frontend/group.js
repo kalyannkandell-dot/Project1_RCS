@@ -210,6 +210,10 @@ document.querySelector("#invite_submit").addEventListener("submit", async (e) =>
         toast("Please enter an email.");
         return;
     }
+    if(!await checkEmailExists(email)){
+        toast('user not found');
+        return;
+    }
     try {
         await apiInviteMember(email);
         toast(`Invite sent to ${email}!`, "success");

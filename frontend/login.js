@@ -36,6 +36,11 @@ document.querySelector('#form_login').addEventListener('submit', async (e) => {
     const password = document.querySelector('#password').value;
     const btn      = document.querySelector('#auth_button');
 
+    if(!isEmail(email)){
+        toast('email is incorrect');
+        return;
+    }
+
     if (!email || !password) {
         toast('Please fill in all fields.');
         return;

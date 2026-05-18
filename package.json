@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "file-type": "^16.5.4",
+    "xss": "^1.0.15"
+  }
+}

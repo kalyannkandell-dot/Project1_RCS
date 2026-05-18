@@ -31,7 +31,7 @@ async function loadSharedWithMe() {
                     <small>Shared by ${f.sharedByEmail} · ${formatSize(f.size)} · ${timeAgo(f.createdAt)}</small>
                 </div>
                 <div class="file_btns">
-                    <a href="${API_BASE}/api/files/${f.fileId}/download" class="btn" download>Download</a>
+                    <button class="btn" onclick="downloadFile('${f.fileId}', '${f.name}')">Download</button>
                 </div>
             </div>
         `).join("");
