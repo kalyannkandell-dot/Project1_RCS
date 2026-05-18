@@ -178,3 +178,19 @@ function showConfirm(message) {
         });
     });
 }
+
+const themeToggle = document.querySelector("#theme_toggle");
+
+// load saved theme on page load
+const savedTheme = localStorage.getItem("hc_theme") || "light";
+document.body.setAttribute("data-theme", savedTheme);
+themeToggle.textContent = savedTheme === "dark" ? "☀️" : "🌙";
+
+// toggle on click
+themeToggle.addEventListener("click", () => {
+    const isDark = document.body.getAttribute("data-theme") === "dark";
+    const next   = isDark ? "light" : "dark";
+    document.body.setAttribute("data-theme", next);
+    localStorage.setItem("hc_theme", next);
+    themeToggle.textContent = next === "dark" ? "☀️" : "🌙";
+});
