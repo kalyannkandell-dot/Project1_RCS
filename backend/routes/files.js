@@ -67,7 +67,7 @@ fileFilter: (req, file, cb) => {
 router.use(auth);
 
 // ─── POST /api/files — upload a file ─────────────────────────────────────────
-router.post("/", (req, res) => {
+router.post("/:groupId/files", (req, res) => {
   upload.single("file")(req, res, (err) => {
     if (err) {
       return res.status(400).json({ error: err.message });

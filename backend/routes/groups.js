@@ -347,26 +347,7 @@ router.delete("/:groupId/members/:memberId", (req, res) => {
   return res.json({ message: "Member removed from group." });
 });
 
-// ─── GET /api/groups/:groupId/files — list group files ───────────────────────
-router.get("/:groupId/files", (req, res) => {
-  const { groupId } = req.params;
 
-  if (!requireMember(req, res, groupId)) return;
-
-  const files = db
-    .prepare(
-      `SELECT f.*, gf.addedAt, gf.addedBy,
-              u.fullName AS addedByName, u.email AS addedByEmail
-       FROM group_files gf
-       JOIN files f ON f.id = gf.fileId
-       JOIN users u ON u.id = gf.addedBy
-       WHERE gf.groupId = ?
-       ORDER BY gf.addedAt DESC`
-    )
-    .all(groupId);
-
-  return res.json(files);
-});
 
 // ─── POST /api/groups/:groupId/files — upload file directly to group ──────────
 router.post("/:groupId/files", (req, res) => {

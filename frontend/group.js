@@ -4,7 +4,7 @@ if (!localStorage.getItem("hc_token")) {
 
 const params  = new URLSearchParams(window.location.search);
 const groupId = params.get("id");
-
+console.log(groupId);
 if (!groupId) {
     window.location.href = "bonds.html";
 }
@@ -187,8 +187,8 @@ document.querySelector("#group_file_input").addEventListener("change", async (e)
     toast(`Uploading ${file.name}…`);
     try {
         await apiUploadGroupFile(file);
-        toast(`${file.name} uploaded!`, "success");
         await loadGroupFiles();
+        toast(`${file.name} uploaded!`, "success");
     } catch (err) {
         console.error("Upload failed:", err);
         toast(err.error || "Upload failed.");
