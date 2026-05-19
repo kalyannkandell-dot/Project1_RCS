@@ -178,7 +178,26 @@ router.get("/:id/download", (req, res) => {
       .get(req.params.id, req.user.id);
 
     if (!share) {
-      return res.status(404).json({ error: "File not found or access denied." });
+      console.log("groupFile query:", req.params.id, req.user.id);
+      const groupFile = db.prepare(
+    `SELECT f.* FROM files f
+     JOIN group_files gf ON gf.fileId = f.id
+     JOIN group_members gm ON gm.groupId = gf.groupId
+     WHERE f.id = ? AND gm.userId = ?`
+).get(req.params.id, req.user.id);
+
+if (!groupFile) {
+    return res.status(404).json({ error: "File not found or access denied." });
+}
+
+const fullPath = path.join(__dirname, "..", groupFile.path);
+if (!fs.existsSync(fullPath)) {
+    return res.status(410).json({ error: "File no longer exists on disk." });
+}
+
+res.setHeader("Content-Disposition", `attachment; filename="${groupFile.name}"`);
+res.setHeader("Content-Type", groupFile.mimeType || "application/octet-stream");
+return fs.createReadStream(fullPath).pipe(res);
     }
 
     const fullPath = path.join(__dirname, "..", share.path);

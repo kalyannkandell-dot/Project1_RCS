@@ -37,23 +37,22 @@ document.querySelector('#register_form').addEventListener('submit', async (e) =>
     const passwordConf = document.querySelector('#password_conf').value;
     const btn          = document.querySelector('#auth_button');
 
-    if(!isEmail(email)){
-        toast('Enter an actual Email');
-        return;
-    }
-
     if (!email || !password || !passwordConf) {
-        toast('Please fill in all fields.');
-        return;
-    }
-    if (password.length < 6) {
-        toast('Password must be at least 6 characters.');
-        return;
-    }
-    if (password !== passwordConf) {
-        toast('Passwords do not match.');
-        return;
-    }
+    toast('Please fill in all fields.');
+    return;
+}
+if (!isEmail(email)) {
+    toast('Enter an actual Email');
+    return;
+}
+if (!passwordRegex.test(password)) {
+    toast('Password must be at least 8 characters, include one uppercase letter and one number.');
+    return;
+}
+if (password !== passwordConf) {
+    toast('Passwords do not match.');
+    return;
+}
 
     const originalText = btn.textContent;
     btn.textContent = 'Registering…';

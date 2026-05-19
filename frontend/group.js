@@ -186,7 +186,7 @@ async function loadGroupFiles() {
                     <span class="file_icon">${getFileIcon(f.name)}</span>
                     <div class="file_meta">
                         <strong>${f.name}</strong>
-                        <small>${formatSize(f.size)} · Uploaded by ${uploadedBy} · ${timeAgo(f.addedAt)}</small>
+                        <small>${formatSize(f.size)} <br>${uploadedBy} <br> ${timeAgo(f.addedAt)}</small>
                     </div>
                     <div class="file_btns">
                         <button class="btn btn_download" data-id="${f.id}" data-name="${f.name}">Download</button>
@@ -209,7 +209,7 @@ async function loadGroupFiles() {
 // ── DELETE GROUP FILE ─────────────────────────────────────────────────────────
 
 async function deleteGroupFile(fileId) {
-    if (!confirm("Delete this file?")) return;
+    if (!await showConfirm("Delete this file?", "Delete")) return;
     try {
         await apiDeleteGroupFile(fileId);
         toast("File deleted.", "success");
@@ -269,7 +269,7 @@ document.querySelector("#invite_submit").addEventListener("submit", async (e) =>
 
 document.querySelector("#leave_btn").addEventListener("click", async () => {
     if (currentUserRole === "Admin") {
-        if (!confirm("Delete this group permanently? All files and members will be removed.")) return;
+        if (!await showConfirm("Delete this group permanently? All files and members will be removed.", "Delete Group")) return;
         try {
             await apiDeleteGroup();
             toast("Group deleted.", "success");
@@ -279,7 +279,7 @@ document.querySelector("#leave_btn").addEventListener("click", async () => {
             toast(err.message || "Could not delete group.");
         }
     } else {
-        if (!confirm("Are you sure you want to leave this group?")) return;
+        if (!await showConfirm("Are you sure you want to leave this group?", "Leave Group")) return;
         try {
             await apiLeaveGroup();
             toast("You left the group.", "success");

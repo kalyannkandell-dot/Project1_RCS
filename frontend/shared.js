@@ -11,6 +11,16 @@ function apiFetchSharedByMe() {
 function apiRevokeShare(shareId) {
     return fetch(`${API_BASE}/api/shared/${shareId}`, { method: "DELETE", headers: getAuthHeaders() }).then(r => r.json());
 }
+async function downloadFile(id, name) {
+    const res = await fetch(`${API_BASE}/api/files/${id}/download`, { headers: getAuthHeaders() })
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = name
+    a.click()
+    URL.revokeObjectURL(url)
+}
 
 async function loadSharedWithMe() {
     const container = document.querySelector("#shared_with_me_list");
@@ -28,7 +38,7 @@ async function loadSharedWithMe() {
                 <span class="file_icon">${getFileIcon(f.name)}</span>
                 <div class="file_meta">
                     <strong>${f.name}</strong>
-                    <small>Shared by ${f.sharedByEmail} · ${formatSize(f.size)} · ${timeAgo(f.createdAt)}</small>
+                    <small>Shared by ${f.sharedByEmail} <br> ${formatSize(f.size)} <br> ${timeAgo(f.sharedAt)}</small>
                 </div>
                 <div class="file_btns">
                     <button class="btn" onclick="downloadFile('${f.fileId}', '${f.name}')">Download</button>
@@ -72,7 +82,7 @@ async function loadSharedByMe() {
 }
 
 async function revokeShare(shareId, btnEl) {
-    if (!confirm("Revoke this share?")) return;
+    if (!await showConfirm("Revoke this share?", "Revoke")) return;
     btnEl.textContent = "…";
     btnEl.disabled = true;
     try {
