@@ -528,4 +528,36 @@ router.get("/:groupId/files", (req, res) => {
     return res.json(files);
 });
 
+router.delete("/:groupId", (req, res) => {
+    const { groupId } = req.params;
+
+    if (!requireAdmin(req, res, groupId)) return;
+
+    // get all files in this group
+    const groupFiles = db.prepare(
+        `SELECT f.* FROM files f
+         JOIN group_files gf ON gf.fileId = f.id
+         WHERE gf.groupId = ?`
+    ).all(groupId);
+
+    // delete from disk and clean up each file's references first
+    for (const file of groupFiles) {
+        const fullPath = path.join(__dirname, "..", file.path);
+        if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+        db.prepare("DELETE FROM shares WHERE fileId = ?").run(file.id);
+        db.prepare("UPDATE users SET storageUsed = MAX(0, storageUsed - ?) WHERE id = ?")
+          .run(file.size, file.userId);
+    }
+
+    // now delete in correct FK order
+    db.prepare("DELETE FROM group_files WHERE groupId = ?").run(groupId);
+    db.prepare("DELETE FROM files WHERE id IN (SELECT fileId FROM group_files WHERE groupId = ?)").run(groupId);
+    db.prepare("DELETE FROM shares WHERE sharedWithGroup = ?").run(groupId);
+    db.prepare("DELETE FROM invites WHERE groupId = ?").run(groupId);
+    db.prepare("DELETE FROM group_members WHERE groupId = ?").run(groupId);
+    db.prepare("DELETE FROM groups WHERE id = ?").run(groupId);
+
+    return res.json({ message: "Group deleted." });
+});
+
 module.exports = router;
