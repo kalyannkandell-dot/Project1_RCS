@@ -9,6 +9,20 @@ const router = express.Router();
 
 const STORAGE_LIMIT = 1073741824; // 1 GB in bytes
 
+const BLOCKED_EXTENSIONS = ["js", "jsx", "ts", "html", "exe", "sh", "bat", "php", "py", "rb", "ps1", "cmd", "jar", "msi", "dll"];
+
+const ALLOWED_MIMETYPES = [
+    "image/jpeg", "image/png", "image/gif", "image/webp",
+    "application/pdf",
+    "text/plain",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/csv",
+    "application/zip",
+];
+
 // ─── Multer — group file uploads ──────────────────────────────────────────────
 
 const fileStorage = multer.diskStorage({
@@ -355,7 +369,7 @@ router.post("/:groupId/files", (req, res) => {
 
 if (!requireMember(req, res, groupId)) return;
 
-upload.single("file")(req, res, async (err) => {
+upload.single("file")(req, res,(err) => {
     if (err) {
         return res.status(400).json({ error: err.message });
     }
@@ -364,13 +378,7 @@ upload.single("file")(req, res, async (err) => {
         return res.status(400).json({ error: "No file uploaded." });
     }
 
-    // byte-level check
-    const detected = await fileType.fromFile(req.file.path);
-    const BLOCKED = ["exe", "sh", "bat", "php", "js", "html"];
-    if (!detected || BLOCKED.includes(detected.ext)) {
-        fs.unlinkSync(req.file.path);
-        return res.status(400).json({ error: "This file type is not allowed." });
-    }
+
 
     const user = db.prepare("SELECT storageUsed FROM users WHERE id = ?").get(req.user.id);
 
@@ -500,6 +508,24 @@ router.delete("/:groupId/files/:fileId", (req, res) => {
   ).run(fileId, groupId);
 
   return res.json({ message: "File removed from group." });
+});
+
+router.get("/:groupId/files", (req, res) => {
+    const { groupId } = req.params;
+
+    if (!requireMember(req, res, groupId)) return;
+
+    const files = db.prepare(
+        `SELECT f.*, gf.addedAt, gf.addedBy,
+                u.fullName AS addedByName, u.email AS addedByEmail
+         FROM group_files gf
+         JOIN files f ON f.id = gf.fileId
+         JOIN users u ON u.id = gf.addedBy
+         WHERE gf.groupId = ?
+         ORDER BY gf.addedAt DESC`
+    ).all(groupId);
+
+    return res.json(files);
 });
 
 module.exports = router;

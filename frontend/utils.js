@@ -22,16 +22,7 @@ function formatSize(bytes) {
     return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
 }
 
-async function downloadFile(id, name) {
-    const res = await fetch(`${API_BASE}/api/files/${id}/download`, { headers: getAuthHeaders() })
-    const blob = await res.blob()
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = name
-    a.click()
-    URL.revokeObjectURL(url)
-}
+
 
 function timeAgo(timestamp) {
     const now = Date.now();

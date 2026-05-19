@@ -36,6 +36,7 @@ async function downloadFile(id, name) {
     URL.revokeObjectURL(url)
 }
 
+
 async function loadStorage() {
     try {
         const data = await API.getStorage();

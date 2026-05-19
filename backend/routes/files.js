@@ -4,7 +4,7 @@ const fs = require("fs");
 const multer = require("multer");
 const db = require("../db/database");
 const auth = require("../middleware/auth");
-const fileType = require("file-type");
+
 
 const router = express.Router();
 
@@ -65,6 +65,40 @@ fileFilter: (req, file, cb) => {
 
 // ─── All routes are protected ─────────────────────────────────────────────────
 router.use(auth);
+
+// actual uplode a file 
+router.post("/", (req, res) => {
+  upload.single("file")(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded." });
+    }
+
+    const user = db.prepare("SELECT storageUsed FROM users WHERE id = ?").get(req.user.id);
+
+    if (user.storageUsed + req.file.size > STORAGE_LIMIT) {
+      fs.unlinkSync(req.file.path);
+      return res.status(400).json({ error: "Not enough storage space for this file." });
+    }
+
+    const relativePath = path
+      .join("uploads", "files", String(req.user.id), req.file.filename)
+      .replace(/\\/g, "/");
+
+    const result = db
+      .prepare(`INSERT INTO files (userId, name, path, size, mimeType) VALUES (?, ?, ?, ?, ?)`)
+      .run(req.user.id, req.file.originalname, relativePath, req.file.size, req.file.mimetype);
+
+    db.prepare("UPDATE users SET storageUsed = storageUsed + ? WHERE id = ?").run(req.file.size, req.user.id);
+
+    const file = db.prepare("SELECT * FROM files WHERE id = ?").get(result.lastInsertRowid);
+
+    return res.status(201).json(file);
+  });
+});
 
 // ─── POST /api/files — upload a file ─────────────────────────────────────────
 router.post("/:groupId/files", (req, res) => {
