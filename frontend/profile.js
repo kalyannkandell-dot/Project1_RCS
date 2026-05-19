@@ -132,22 +132,22 @@ document.querySelector("#change_password").addEventListener("submit", async (e) 
     const msg         = document.querySelector("#password_msg");
 
     if (!currentPass || !newPass || !confirmPass) {
-    msg.textContent = "Please fill in all fields.";
-    msg.style.color = "#cc0000";
-    return;
-}
+        msg.textContent = "Please fill in all fields.";
+        msg.style.color = "#cc0000";
+        return;
+    }
 
-if (!passwordRegex.test(newPass)) {
-    msg.textContent = "New password must be at least 8 characters, include one uppercase letter and one number.";
-    msg.style.color = "#cc0000";
-    return;
-}
+    if (newPass.length < 6) {
+        msg.textContent = "New password must be at least 6 characters.";
+        msg.style.color = "#cc0000";
+        return;
+    }
 
-if (newPass !== confirmPass) {
-    msg.textContent = "New passwords do not match.";
-    msg.style.color = "#cc0000";
-    return;
-}
+    if (newPass !== confirmPass) {
+        msg.textContent = "New passwords do not match.";
+        msg.style.color = "#cc0000";
+        return;
+    }
 
 try {
     await API.changePassword(currentPass, newPass);
